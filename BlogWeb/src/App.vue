@@ -1,8 +1,14 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
-  </div>
+  <AuthProvider>
+    <div id="app">
+      <router-view></router-view>
+    </div>
+  </AuthProvider>
 </template>
+
+<script setup>
+import { AuthProvider } from './context/AuthContext'
+</script>
 
 <style>
 * {
