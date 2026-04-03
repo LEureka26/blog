@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { register, login } = require('../controllers/userController');
 
 // 首页-文章列表
 router.get('/articles', (req, res) => {
@@ -7,14 +8,10 @@ router.get('/articles', (req, res) => {
 });
 
 // 用户注册
-router.post('/register', (req, res) => {
-  res.send('用户注册');
-});
+router.post('/register', register);
 
 // 用户登录
-router.post('/login', (req, res) => {
-  res.send('用户登录');
-});
+router.post('/login', login);
 
 // 用户个人中心
 router.get('/user', (req, res) => {

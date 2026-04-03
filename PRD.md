@@ -110,5 +110,15 @@
 - 验证用户是否是文章作者，不是提示用户没有权限
 - 删除文章
 - 返回成功信息
+### 创建前端页面
+创建名为WlogWeb的vue3 + Element-Plus + Vite前端项目，进行初始化并配置前端路由：
+- 首页-文章列表：GET /articles
+- 用户注册：POST /register
+- 用户登录：POST /login
+- 用户个人中心：GET /user
+- 发布文章：POST /articles
+- 分类列表：GET /categories
+- 文章详情：GET /articles/:id
+- 文章搜索：GET /articles/search=:search
 ```
 
