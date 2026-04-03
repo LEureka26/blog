@@ -111,7 +111,7 @@
 - 删除文章
 - 返回成功信息
 ### 创建前端页面
-创建名为WlogWeb的vue3 + Element-Plus + Vite前端项目，进行初始化并配置前端路由：
+创建名为BlogWeb的vue3 + Element-Plus + Vite前端项目，进行初始化并配置前端路由：
 - 首页-文章列表：GET /articles
 - 用户注册：POST /register
 - 用户登录：POST /login

@@ -3,6 +3,10 @@ const { hashPassword, comparePassword, generateToken } = require('../utils/auth'
 
 async function register(req, res) {
   try {
+    if (!req.body) {
+      return res.status(400).json({ error: '请求体不能为空' });
+    }
+    
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
@@ -55,6 +59,10 @@ async function register(req, res) {
 
 async function login(req, res) {
   try {
+    if (!req.body) {
+      return res.status(400).json({ error: '请求体不能为空' });
+    }
+    
     const { username, password } = req.body;
 
     if (!username || !password) {
