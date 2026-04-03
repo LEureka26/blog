@@ -49,7 +49,7 @@ const routes = [
   {
     path: '/search',
     name: 'Search',
-    component: () => import('../views/Search.vue'),
+    redirect: '/articleslist',
     meta: { requiresAuth: true }
   }
 ]

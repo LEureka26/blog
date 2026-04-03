@@ -1,48 +1,58 @@
 <template>
   <div class="category-list">
-    <div class="header">
-      <h1>分类列表</h1>
-      <el-button type="primary" @click="navigateToCreateArticle">写文章</el-button>
-    </div>
-    
-    <div class="content">
-      <!-- 左侧分类列表 -->
-      <div class="sidebar">
-        <h2>分类</h2>
-        <ul>
-          <li 
-            v-for="category in categories" 
-            :key="category.id"
-            :class="{ active: activeCategory === category.name }"
-            @click="selectCategory(category.name)"
-          >
-            {{ category.name }}
-          </li>
-        </ul>
+    <div class="container">
+      <div class="header">
+        <h1>分类列表</h1>
+        <el-button type="primary" @click="navigateToCreateArticle">写文章</el-button>
       </div>
-      
-      <!-- 右侧文章列表 -->
-      <div class="article-list">
-        <h2>{{ activeCategory || '全部' }}分类文章</h2>
-        <div class="article-card" v-for="article in filteredArticles" :key="article.id">
-          <router-link :to="`/articles/${article.id}`" class="article-title">{{ article.title }}</router-link>
-          
-          <div class="article-content">
-            <div v-if="article.cover" class="article-cover">
-              <img :src="article.cover" :alt="article.title">
-            </div>
-            <div class="article-text">
-              <p class="content-text">{{ truncateContent(article.content) }}</p>
-              <div class="article-meta">
-                <span class="article-tags" v-for="tag in JSON.parse(article.tags)" :key="tag">#{{ tag }}</span>
-                <span class="article-views">浏览 {{ article.views || 0 }} 次</span>
-              </div>
-            </div>
-          </div>
+
+      <div class="category-container">
+        <!-- 左侧分类列表 -->
+        <div class="category-sidebar">
+          <h2>分类</h2>
+          <ul class="category-menu">
+            <li 
+              class="category-item" 
+              :class="{ active: !activeCategory }"
+              @click="selectCategory('')"
+            >
+              全部
+            </li>
+            <li 
+              v-for="category in categories" 
+              :key="category.id"
+              class="category-item"
+              :class="{ active: activeCategory === category.name }"
+              @click="selectCategory(category.name)"
+            >
+              {{ category.name }}
+            </li>
+          </ul>
         </div>
-        
-        <div v-if="filteredArticles.length === 0" class="empty-state">
-          <p>暂无文章</p>
+
+        <!-- 右侧文章列表 -->
+        <div class="article-list">
+          <div class="article-card" v-for="article in filteredArticles" :key="article.id">
+            <router-link :to="`/articles/${article.id}`" class="article-link">
+              <div class="article-content">
+                <div v-if="article.cover" class="article-cover">
+                  <img :src="article.cover" :alt="article.title">
+                </div>
+                <div class="article-text">
+                  <h3 class="article-title">{{ article.title }}</h3>
+                  <p class="content-text">{{ truncateContent(article.content) }}</p>
+                  <div class="article-meta">
+                    <span class="article-tags" v-for="tag in getArticleTags(article.tags)" :key="tag">#{{ tag }}</span>
+                    <span class="article-views">浏览 {{ article.views || 0 }} 次</span>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+
+          <div v-if="filteredArticles.length === 0" class="empty-state">
+            <p>暂无文章</p>
+          </div>
         </div>
       </div>
     </div>
@@ -72,14 +82,33 @@ const selectCategory = (category) => {
 
 // 过滤文章
 const filteredArticles = computed(() => {
+  if (!Array.isArray(articles.value)) {
+    return []
+  }
   if (!activeCategory.value) {
     return articles.value
   }
   return articles.value.filter(article => article.category === activeCategory.value)
 })
 
+// 处理文章标签
+const getArticleTags = (tags) => {
+  if (!tags) {
+    return []
+  }
+  try {
+    return JSON.parse(tags)
+  } catch (error) {
+    console.error('解析标签失败:', error)
+    return []
+  }
+}
+
 // 截断内容
 const truncateContent = (content) => {
+  if (!content) {
+    return ''
+  }
   const plainText = content.replace(/[\r\n]+/g, ' ').replace(/[\s]+/g, ' ')
   if (plainText.length > 150) {
     return plainText.substring(0, 150) + '...'
@@ -106,8 +135,31 @@ const getCategories = async () => {
 // 获取文章列表
 const getArticles = async () => {
   try {
+    console.log('开始获取文章列表...')
     const response = await articleAPI.getArticles()
-    articles.value = response.data
+    console.log('获取文章列表响应:', response)
+    console.log('响应数据:', response.data)
+    // 处理后端返回的数据格式
+    if (response.data && Array.isArray(response.data)) {
+      // 如果 response.data 是一个数组，直接使用它
+      articles.value = response.data
+    } else if (response.data && typeof response.data === 'object' && Array.isArray(response.data.data)) {
+      // 如果 response.data 是一个对象，并且它有一个 data 属性，使用 response.data.data
+      articles.value = response.data.data
+    } else {
+      // 否则，使用一个空数组
+      articles.value = []
+    }
+    console.log('处理后的文章列表:', articles.value)
+    // 处理文章标签
+    if (Array.isArray(articles.value)) {
+      articles.value.forEach(article => {
+        if (!article.tags) {
+          article.tags = '[]'
+        }
+      })
+    }
+    console.log('处理标签后的文章列表:', articles.value)
   } catch (error) {
     console.error('获取文章列表失败:', error)
   }
@@ -115,14 +167,20 @@ const getArticles = async () => {
 
 // 初始化
 onMounted(async () => {
+  console.log('开始初始化...')
   await getCategories()
+  console.log('获取分类列表完成')
   await getArticles()
+  console.log('获取文章列表完成')
 })
 </script>
 
 <style scoped>
 .category-list {
   padding: 20px;
+}
+
+.container {
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -137,103 +195,106 @@ onMounted(async () => {
 .header h1 {
   font-size: 24px;
   font-weight: bold;
+  color: #333;
 }
 
-.content {
+.category-container {
   display: flex;
   gap: 30px;
 }
 
-.sidebar {
+.category-sidebar {
   width: 200px;
-  border-right: 1px solid #e0e0e0;
-  padding-right: 20px;
+  flex-shrink: 0;
 }
 
-.sidebar h2 {
+.category-sidebar h2 {
   font-size: 18px;
-  margin-bottom: 20px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar li {
-  padding: 10px 0;
-  cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
-  transition: all 0.3s;
-}
-
-.sidebar li:hover {
-  color: #409eff;
-}
-
-.sidebar li.active {
-  color: #409eff;
   font-weight: bold;
-  border-bottom-color: #409eff;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.category-menu {
+  list-style: none;
+}
+
+.category-item {
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #333;
+}
+
+.category-item:hover {
+  background: #f5f7fa;
+  color: #409eff;
+}
+
+.category-item.active {
+  background: #409eff;
+  color: #fff;
 }
 
 .article-list {
   flex: 1;
-}
-
-.article-list h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
 }
 
 .article-card {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
+  overflow: hidden;
   transition: all 0.3s;
 }
 
 .article-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.article-link {
+  display: block;
+  text-decoration: none;
+  color: #333;
+}
+
+.article-content {
+  padding: 20px;
+}
+
+.article-cover {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.article-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.article-card:hover .article-cover img {
+  transform: scale(1.05);
 }
 
 .article-title {
   font-size: 18px;
   font-weight: bold;
-  color: #333;
-  text-decoration: none;
-  margin-bottom: 15px;
-  display: block;
+  margin-bottom: 10px;
   transition: color 0.3s;
 }
 
-.article-title:hover {
+.article-card:hover .article-title {
   color: #409eff;
-}
-
-.article-content {
-  display: flex;
-  gap: 20px;
-  margin-top: 15px;
-}
-
-.article-cover {
-  width: 40%;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.article-cover img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-}
-
-.article-text {
-  flex: 1;
 }
 
 .content-text {
@@ -251,60 +312,54 @@ onMounted(async () => {
 
 .article-meta {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
   font-size: 12px;
   color: #999;
-  margin-top: 10px;
 }
 
 .article-tags {
+  display: flex;
+  gap: 8px;
+}
+
+.article-tags span {
   background: #f0f0f0;
   padding: 2px 8px;
   border-radius: 10px;
-}
-
-.article-views {
-  margin-left: auto;
+  color: #666;
 }
 
 .empty-state {
   text-align: center;
-  padding: 50px 0;
+  padding: 100px 0;
   color: #999;
+  grid-column: 1 / -1;
 }
 
 @media (max-width: 768px) {
-  .content {
+  .category-container {
     flex-direction: column;
   }
   
-  .sidebar {
+  .category-sidebar {
     width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #e0e0e0;
-    padding-right: 0;
-    padding-bottom: 20px;
     margin-bottom: 20px;
   }
   
-  .sidebar ul {
+  .category-menu {
     display: flex;
-    gap: 20px;
     overflow-x: auto;
+    gap: 10px;
   }
   
-  .sidebar li {
-    border-bottom: none;
+  .category-item {
     white-space: nowrap;
+    margin-bottom: 0;
   }
   
-  .article-content {
-    flex-direction: column;
-  }
-  
-  .article-cover {
-    width: 100%;
+  .article-list {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -1,13 +1,17 @@
 <template>
   <AuthProvider>
     <div id="app">
-      <router-view></router-view>
+      <Header />
+      <main class="main-content">
+        <router-view></router-view>
+      </main>
     </div>
   </AuthProvider>
 </template>
 
 <script setup>
 import { AuthProvider } from './context/AuthContext'
+import Header from './components/Header.vue'
 </script>
 
 <style>
@@ -19,10 +23,17 @@ import { AuthProvider } from './context/AuthContext'
 
 body {
   font-family: Arial, sans-serif;
+  background: #f5f7fa;
 }
 
 #app {
   width: 100%;
   min-height: 100vh;
+}
+
+.main-content {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  padding: 20px 0;
 }
 </style>

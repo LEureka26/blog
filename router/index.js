@@ -64,10 +64,51 @@ async function createArticle(req, res) {
 // 获取文章列表
 async function getArticles(req, res) {
   try {
-    const [articles] = await pool.execute(
-      'SELECT * FROM articles ORDER BY created_at DESC'
-    );
-    res.status(200).json(articles);
+    const { page = 1, pageSize = 10, category = '', search = '' } = req.query;
+    
+    let query = 'SELECT * FROM articles WHERE 1=1';
+    const params = [];
+    
+    if (category) {
+      query += ' AND category = ?';
+      params.push(category);
+    }
+    
+    if (search) {
+      query += ' AND (title LIKE ? OR content LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`);
+    }
+    
+    query += ' ORDER BY created_at DESC';
+    
+    // 分页
+    const offset = (page - 1) * pageSize;
+    query += ' LIMIT ? OFFSET ?';
+    params.push(parseInt(pageSize), parseInt(offset));
+    
+    const [articles] = await pool.execute(query, params);
+    
+    // 获取总条数
+    let countQuery = 'SELECT COUNT(*) as total FROM articles WHERE 1=1';
+    const countParams = [];
+    
+    if (category) {
+      countQuery += ' AND category = ?';
+      countParams.push(category);
+    }
+    
+    if (search) {
+      countQuery += ' AND (title LIKE ? OR content LIKE ?)';
+      countParams.push(`%${search}%`, `%${search}%`);
+    }
+    
+    const [countResult] = await pool.execute(countQuery, countParams);
+    const total = countResult[0].total;
+    
+    res.status(200).json({
+      data: articles,
+      total
+    });
   } catch (error) {
     console.error('获取文章列表失败:', error);
     res.status(500).json({ error: '获取文章列表失败，请稍后重试' });
