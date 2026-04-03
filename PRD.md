@@ -27,6 +27,7 @@
 - 后端：Node.js + Express
 - 数据库：MySQL
 - JWT：JSON Web Token
+
 ### 路由设计
 - 首页：文章列表 用get方法请求，参数包括分页、分类筛选、搜索，返回文章列表，每个文章包括标题、封面图、分类、标签、浏览次数，点击标题跳转到详情页，点击分类跳转到分类列表页，点击搜索跳转到搜索页，点击分页跳转到对应页，点击登录跳转到登录页，点击注册跳转到注册页，点击个人中心跳转到个人中心页（唯一，登陆后才能跳转，否则跳转到登录页）。
 - 文章详情页（需要登录）
@@ -36,11 +37,78 @@
 - 个人中心页（需要登录）
 - 登录/注册页（无需登录）
 
-Article details page (requires login)
-- Category list page (requires login)
-- Search page (requires login)
-- Write an article page (requires login)
-- Personal center page (requires login)
-- Login/Registration Page (requires no login)
+### 数据库设计
+- 用户表：id（主键）、username（用户名，唯一）、email（邮箱，唯一）、password（密码，加密存储）、avatar（头像 URL）、created_at（创建时间）、updated_at（更新时间）。
+- 文章表：id、title（标题）、content（内容，Markdown 格式）、cover（封面图 URL）、category（分类）、tags（标签，JSON 数组）、author_id（作者 ID，外键关联 users）、views（浏览次数）、created_at、updated_at。
+- 分类表：id、name（分类名称）、description（分类描述）。   
 
+### 接口设计
+- 首页-文章列表：GET /articles
+- 用户注册：POST /register
+- 用户登录：POST /login
+- 用户个人中心：GET /user
+- 发布文章：POST /articles
+- 分类列表：GET /categories
+- 文章详情：GET /articles/:id
+- 文章搜索：GET /articles/search=:search
+
+### 分页筛选设计
+- 分页：默认每页 10 条，支持自定义每页数量
+- 分类筛选：支持根据分类筛选文章
+- 搜索：支持根据标题、内容、标签搜索文章
+### 登录注册设计
+用户注册：POST /register
+- 用户名、邮箱、密码（加密存储、唯一、必填、最小长度 6）
+- 接收 username、email、password
+- 验证参数（用户名 3-20 字符，邮箱格式正确，密码至少 6 位）
+- 检查用户名和邮箱是否已存在
+- 保存到数据库
+- 返回成功信息
+
+用户登录：POST /login
+- 可以直接登录 、没账号跳转到注册、信息用JWT token加密
+- 接收 username、password
+- 验证用户是否存在，不存在提示用户注册
+- 验证密码是否正确
+- 生成 JWT token（有效期 7 天）
+- 返回 token 和用户信息
+
+创建文章：POST /articles
+- 接收 title、content、category、tags、cover
+- 验证参数（标题、内容、分类、标签、封面）
+- 保存到数据库
+- 返回成功信息
+
+首页获取文章列表：GET /articles
+- 接收分页、分类筛选、搜索参数
+- 返回文章列表
+- 文章列表包括标题、封面图、分类、标签、浏览次数
+- 点击标题跳转到详情页
+- 点击分类跳转到分类列表页
+- 点击搜索跳转到搜索页
+- 点击分页跳转到对应页
+- 点击登录跳转到登录页
+- 点击注册跳转到注册页
+- 点击个人中心跳转到个人中心页（唯一，登陆后才能跳转，否则跳转到登录页）
+
+获取文章详情：GET /articles/:id
+- 接收文章 ID
+- 返回文章详情
+- 文章详情包括标题、内容、封面图、分类、标签、浏览次数
+- 浏览次数 +1
+
+编辑文章：PUT /articles/:id
+- 接收文章 ID
+- 接收 title、content、category、tags、cover
+- 验证参数（标题、内容、分类、标签、封面）
+- 保存到数据库
+- 返回成功信息
+
+删除文章：DELETE /articles/:id
+- 接收文章 ID
+- 验证用户是否存在，不存在提示用户注册
+- 验证用户是否是文章作者，不是提示用户没有权限
+- 删除文章
+- 返回成功信息
 ```
+
