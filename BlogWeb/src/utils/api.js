@@ -7,7 +7,7 @@ export const authAPI = {
 }
 
 export const articleAPI = {
-  getArticles: (params) => api.get('/articles', { params }),
+  getArticles: (params) => api.get('/articleslist', { params }),
   getArticle: (id) => api.get(`/articles/${id}`),
   createArticle: (data) => api.post('/articles', data),
   searchArticles: (search) => api.get(`/articles/search=${search}`)

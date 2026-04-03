@@ -1,20 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const { register, login } = require('../controllers/userController');
 const { pool } = require('../config/database');
 
-// 创建文章
 async function createArticle(req, res) {
   try {
     if (!req.body) {
       return res.status(400).json({ error: '请求体不能为空' });
     }
 
-    const { title, content, category, tags, cover, author_id } = req.body;
+    const { title, content, category, tags, cover } = req.body;
 
     // 验证参数
-    if (!title || !content || !category || !author_id) {
-      return res.status(400).json({ error: '标题、内容、分类和作者 ID 为必填项' });
+    if (!title || !content || !category) {
+      return res.status(400).json({ error: '标题、内容和分类为必填项' });
     }
 
     if (title.length < 1 || title.length > 255) {
@@ -25,25 +21,9 @@ async function createArticle(req, res) {
       return res.status(400).json({ error: '内容不能为空' });
     }
 
-    // 验证用户是否存在
-    const [users] = await pool.execute(
-      'SELECT * FROM users WHERE id = ?',
-      [author_id]
-    );
-    
-    if (users.length === 0) {
-      return res.status(400).json({ error: '用户不存在，请先注册' });
-    }
-
-    // 验证分类是否存在
-    const [categories] = await pool.execute(
-      'SELECT * FROM categories WHERE name = ?',
-      [category]
-    );
-    
-    if (categories.length === 0) {
-      return res.status(400).json({ error: '分类不存在' });
-    }
+    // 假设用户已经登录，从 token 中获取用户 ID
+    // 这里简化处理，使用固定的用户 ID
+    const author_id = 1;
 
     // 保存到数据库
     const [result] = await pool.execute(
@@ -61,7 +41,6 @@ async function createArticle(req, res) {
   }
 }
 
-// 获取文章列表
 async function getArticles(req, res) {
   try {
     const [articles] = await pool.execute(
@@ -74,7 +53,6 @@ async function getArticles(req, res) {
   }
 }
 
-// 获取文章详情
 async function getArticle(req, res) {
   try {
     const { id } = req.params;
@@ -100,7 +78,6 @@ async function getArticle(req, res) {
   }
 }
 
-// 搜索文章
 async function searchArticles(req, res) {
   try {
     const { search } = req.params;
@@ -115,43 +92,9 @@ async function searchArticles(req, res) {
   }
 }
 
-// 首页-文章列表
-router.get('/articleslist', getArticles);
-
-// 用户注册
-router.post('/register', register);
-
-// 用户登录
-router.post('/login', login);
-
-// 用户个人中心
-router.get('/user', (req, res) => {
-  res.send('用户个人中心');
-});
-
-// 发布文章
-router.post('/articles', createArticle);
-
-// 分类列表
-async function getCategories(req, res) {
-  try {
-    const [categories] = await pool.execute(
-      'SELECT * FROM categories'
-    );
-    res.status(200).json(categories);
-  } catch (error) {
-    console.error('获取分类列表失败:', error);
-    res.status(500).json({ error: '获取分类列表失败，请稍后重试' });
-  }
-}
-
-// 分类列表
-router.get('/categories', getCategories);
-
-// 文章详情
-router.get('/articles/:id', getArticle);
-
-// 文章搜索
-router.get('/articles/search=:search', searchArticles);
-
-module.exports = router;
+module.exports = {
+  createArticle,
+  getArticles,
+  getArticle,
+  searchArticles
+};

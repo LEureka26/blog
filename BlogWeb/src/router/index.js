@@ -3,10 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    redirect: '/articles'
+    redirect: '/articleslist'
   },
   {
-    path: '/articles',
+    path: '/articleslist',
     name: 'ArticleList',
     component: () => import('../views/ArticleList.vue')
   },
@@ -59,15 +59,15 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   const token = localStorage.getItem('token')
   
   if (to.meta.requiresAuth && !token) {
-    next('/login')
+    return '/login'
   } else if ((to.path === '/login' || to.path === '/register') && token) {
-    next('/articles')
+    return '/articleslist'
   } else {
-    next()
+    return true
   }
 })
 
