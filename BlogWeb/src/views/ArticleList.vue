@@ -1,28 +1,6 @@
 <template>
   <div class="article-list">
     <div class="container">
-      <div class="filter-bar">
-        <div class="filter-item">
-          <label>分类：</label>
-          <el-select v-model="filter.category" placeholder="请选择分类" @change="loadArticles">
-            <el-option label="全部" value=""></el-option>
-            <el-option label="技术" value="技术"></el-option>
-            <el-option label="生活" value="生活"></el-option>
-            <el-option label="感情" value="感情"></el-option>
-          </el-select>
-        </div>
-        <div class="filter-item">
-          <el-input
-            v-model="filter.search"
-            placeholder="搜索文章"
-            @keyup.enter="loadArticles"
-          >
-            <template #append>
-              <el-button @click="loadArticles"><el-icon><Search /></el-icon></el-button>
-            </template>
-          </el-input>
-        </div>
-      </div>
 
       <div class="article-grid">
         <div class="article-card" v-for="article in articles" :key="article.id">
@@ -65,17 +43,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { ElSelect, ElOption, ElInput, ElButton, ElPagination } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { ElPagination } from 'element-plus'
 import { articleAPI } from '../utils/api'
 
+const route = useRoute()
 const articles = ref([])
 const total = ref(0)
-const filter = ref({
-  category: '',
-  search: ''
-})
 const pagination = ref({
   current: 1,
   size: 10
@@ -96,11 +71,11 @@ const truncateContent = (content) => {
 // 加载文章列表
 const loadArticles = async () => {
   try {
+    const search = route.query.search || ''
     const params = {
       page: pagination.value.current,
       pageSize: pagination.value.size,
-      category: filter.value.category,
-      search: filter.value.search
+      search: search
     }
     const response = await articleAPI.getArticles(params)
     // 处理后端返回的数据格式
@@ -134,6 +109,11 @@ const handleCurrentChange = (current) => {
   loadArticles()
 }
 
+// 监听路由变化
+watch(() => route.query, () => {
+  loadArticles()
+}, { immediate: false })
+
 // 初始化
 onMounted(() => {
   loadArticles()
@@ -151,26 +131,7 @@ onMounted(() => {
   padding: 0 20px;
 }
 
-.filter-bar {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.filter-item label {
-  font-size: 14px;
-  color: #666;
-}
 
 .article-grid {
   display: grid;

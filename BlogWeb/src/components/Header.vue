@@ -6,8 +6,19 @@
         <nav class="nav">
           <router-link to="/" class="nav-item">首页</router-link>
           <router-link to="/categories" class="nav-item">分类</router-link>
-          <router-link to="/search" class="nav-item">搜索</router-link>
         </nav>
+        <div class="search-container">
+          <el-input
+            v-model="searchQuery"
+            placeholder="搜索文章"
+            @keyup.enter="handleSearch"
+            class="search-input"
+          >
+            <template #append>
+              <el-button @click="handleSearch"><el-icon><Search /></el-icon></el-button>
+            </template>
+          </el-input>
+        </div>
       </div>
       <div class="header-right">
         <router-link v-if="!isLoggedIn" to="/login" class="nav-item">登录</router-link>
@@ -33,11 +44,14 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../context/AuthContext'
+import { ElInput, ElButton } from 'element-plus'
+import { Search } from '@element-plus/icons-vue'
 import defaultAvatar from '../assets/1.jpeg'
 
 const router = useRouter()
 const { isLoggedIn, logout: authLogout, user } = useAuth()
 const showUserMenu = ref(false)
+const searchQuery = ref('')
 
 // 用户头像
 const userAvatar = computed(() => {
@@ -54,6 +68,13 @@ const logout = async () => {
   await authLogout()
   showUserMenu.value = false
   router.push('/login')
+}
+
+// 处理搜索
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    router.push(`/articles?search=${encodeURIComponent(searchQuery.value)}`)
+  }
 }
 
 // 点击外部关闭用户菜单
@@ -96,7 +117,16 @@ onUnmounted(() => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
+}
+
+.search-container {
+  flex: 1;
+  max-width: 300px;
+}
+
+.search-input {
+  width: 100%;
 }
 
 .logo {
