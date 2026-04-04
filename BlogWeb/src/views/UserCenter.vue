@@ -91,14 +91,7 @@ import avatar10 from '../assets/10.jpg'
 import defaultAvatarImg from '../assets/1.jpeg'
 
 const router = useRouter()
-const { logout } = useAuth()
-const user = ref({
-  id: null,
-  username: '',
-  email: '',
-  avatar: '',
-  created_at: ''
-})
+const { logout, user } = useAuth()
 const userStats = ref({
   articleCount: 0,
   totalViews: 0
@@ -137,14 +130,8 @@ const formatDate = (dateString) => {
 const getUserInfo = async () => {
   try {
     const response = await authAPI.getUser()
-    // 处理后端返回的数据格式
-    if (response.data && typeof response.data === 'object') {
-      user.value = response.data
-      selectedAvatar.value = response.data.avatar || defaultAvatars[0]
-    } else {
-      user.value = response
-      selectedAvatar.value = response.avatar || defaultAvatars[0]
-    }
+    user.value = response
+    selectedAvatar.value = response.avatar || defaultAvatars[0]
   } catch (error) {
     console.error('获取用户信息失败:', error)
     ElMessage.error('获取用户信息失败')
@@ -174,8 +161,13 @@ const selectAvatar = (avatar) => {
 const saveAvatar = async () => {
   try {
     // 调用后端API保存头像
-    await authAPI.updateUser({ avatar: selectedAvatar.value })
-    user.value.avatar = selectedAvatar.value
+    const response = await authAPI.updateUser({ avatar: selectedAvatar.value })
+    // 使用后端返回的完整用户信息
+    if (response.user) {
+      user.value = response.user
+    } else {
+      user.value.avatar = selectedAvatar.value
+    }
     showAvatarDialog.value = false
     ElMessage.success('头像更新成功')
   } catch (error) {

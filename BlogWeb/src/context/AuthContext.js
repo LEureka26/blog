@@ -51,7 +51,8 @@ export const AuthProvider = {
       loading,
       login,
       logout,
-      isAuthenticated
+      isAuthenticated,
+      isLoggedIn: isAuthenticated
     }
 
     provide(AuthContextSymbol, value)

@@ -12,8 +12,13 @@
       <div class="header-right">
         <router-link v-if="!isLoggedIn" to="/login" class="nav-item">登录</router-link>
         <div v-else class="user-menu">
-          <img src="https://via.placeholder.com/32" alt="用户头像" class="user-avatar" @click="toggleUserMenu">
+          <img :src="userAvatar" alt="用户头像" class="user-avatar" @click="toggleUserMenu">
           <div v-if="showUserMenu" class="user-menu-dropdown">
+            <div class="user-menu-header">
+              <img :src="userAvatar" alt="用户头像" class="menu-avatar">
+              <span class="menu-username">{{ user?.username }}</span>
+            </div>
+            <div class="menu-divider"></div>
             <router-link to="/user" class="menu-item">个人中心</router-link>
             <a href="#" class="menu-item" @click.prevent="logout">退出登录</a>
           </div>
@@ -28,10 +33,16 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../context/AuthContext'
+import defaultAvatar from '../assets/1.jpeg'
 
 const router = useRouter()
-const { isLoggedIn, logout: authLogout } = useAuth()
+const { isLoggedIn, logout: authLogout, user } = useAuth()
 const showUserMenu = ref(false)
+
+// 用户头像
+const userAvatar = computed(() => {
+  return user.value?.avatar || defaultAvatar
+})
 
 // 切换用户菜单
 const toggleUserMenu = () => {
@@ -148,13 +159,40 @@ onUnmounted(() => {
 .user-menu-dropdown {
   position: absolute;
   top: 40px;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   background: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   border-radius: 4px;
-  min-width: 120px;
+  min-width: 160px;
   padding: 8px 0;
   z-index: 1000;
+}
+
+.user-menu-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 10px;
+}
+
+.menu-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.menu-username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.menu-divider {
+  height: 1px;
+  background: #e4e7ed;
+  margin: 4px 0;
 }
 
 .menu-item {
