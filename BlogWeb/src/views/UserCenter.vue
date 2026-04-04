@@ -130,8 +130,12 @@ const formatDate = (dateString) => {
 const getUserInfo = async () => {
   try {
     const response = await authAPI.getUser()
-    user.value = response
-    selectedAvatar.value = response.avatar || defaultAvatars[0]
+    // 检查响应格式，确保使用正确的数据结构
+    const userData = response.data || response
+    user.value = userData
+    selectedAvatar.value = userData.avatar || defaultAvatars[0]
+    // 更新 localStorage 中的用户信息，确保数据一致性
+    localStorage.setItem('user', JSON.stringify(userData))
   } catch (error) {
     console.error('获取用户信息失败:', error)
     ElMessage.error('获取用户信息失败')
@@ -162,11 +166,17 @@ const saveAvatar = async () => {
   try {
     // 调用后端API保存头像
     const response = await authAPI.updateUser({ avatar: selectedAvatar.value })
+    // 检查响应格式，确保使用正确的数据结构
+    const responseData = response.data || response
     // 使用后端返回的完整用户信息
-    if (response.user) {
-      user.value = response.user
+    if (responseData.user) {
+      user.value = responseData.user
+      // 更新 localStorage 中的用户信息，确保数据一致性
+      localStorage.setItem('user', JSON.stringify(responseData.user))
     } else {
       user.value.avatar = selectedAvatar.value
+      // 更新 localStorage 中的用户信息，确保数据一致性
+      localStorage.setItem('user', JSON.stringify(user.value))
     }
     showAvatarDialog.value = false
     ElMessage.success('头像更新成功')

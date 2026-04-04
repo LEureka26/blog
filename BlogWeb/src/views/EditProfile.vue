@@ -63,7 +63,15 @@ const handleSubmit = async () => {
   if (!formRef.value) return
   try {
     await formRef.value.validate()
-    await authAPI.updateUser(form)
+    const response = await authAPI.updateUser(form)
+    // 检查响应格式，确保使用正确的数据结构
+    const responseData = response.data || response
+    // 更新 AuthContext 中的用户信息
+    if (responseData.user) {
+      user.value = responseData.user
+      // 更新 localStorage 中的用户信息，确保数据一致性
+      localStorage.setItem('user', JSON.stringify(responseData.user))
+    }
     ElMessage.success('个人信息更新成功')
     router.push('/user')
   } catch (error) {
