@@ -102,6 +102,7 @@ onUnmounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
+  min-width: 1200px;
 }
 
 .header-container {
@@ -118,11 +119,12 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .search-container {
-  flex: 1;
-  max-width: 300px;
+  width: 300px;
+  flex-shrink: 0;
 }
 
 .search-input {
@@ -134,11 +136,13 @@ onUnmounted(() => {
   font-weight: bold;
   color: #409eff;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .nav {
   display: flex;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .nav-item {
@@ -148,6 +152,7 @@ onUnmounted(() => {
   transition: color 0.3s;
   padding: 8px 12px;
   border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .nav-item:hover {
@@ -158,6 +163,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .create-article-btn {
@@ -167,6 +173,7 @@ onUnmounted(() => {
   border-radius: 4px;
   font-size: 14px;
   transition: background 0.3s;
+  flex-shrink: 0;
 }
 
 .create-article-btn:hover {
@@ -177,6 +184,7 @@ onUnmounted(() => {
 .user-menu {
   position: relative;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .user-avatar {
@@ -236,33 +244,5 @@ onUnmounted(() => {
 
 .menu-item:hover {
   background: #f5f7fa;
-}
-
-@media (max-width: 768px) {
-  .header-container {
-    padding: 0 10px;
-  }
-  
-  .header-left {
-    gap: 20px;
-  }
-  
-  .nav {
-    gap: 10px;
-  }
-  
-  .nav-item {
-    font-size: 12px;
-    padding: 6px 8px;
-  }
-  
-  .header-right {
-    gap: 10px;
-  }
-  
-  .create-article-btn {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
 }
 </style>

@@ -244,6 +244,7 @@ onMounted(async () => {
 <style scoped>
 .user-center {
   padding: 20px;
+  min-width: 1200px;
 }
 
 .container {
@@ -267,6 +268,7 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   gap: 15px;
+  flex-shrink: 0;
 }
 
 .avatar {
@@ -402,28 +404,5 @@ onMounted(async () => {
   font-size: 14px;
   color: #666;
   margin: 0;
-}
-
-@media (max-width: 768px) {
-  .user-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .avatar-actions {
-    width: 100%;
-  }
-  
-  .user-stats {
-    flex-direction: column;
-  }
-  
-  .user-actions {
-    flex-direction: column;
-  }
-  
-  .avatar-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 </style>

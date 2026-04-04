@@ -12,5 +12,6 @@
 <style scoped>
 .search {
   padding: 20px;
+  min-width: 1200px;
 }
 </style>

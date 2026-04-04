@@ -178,6 +178,7 @@ onMounted(async () => {
 <style scoped>
 .category-list {
   padding: 20px;
+  min-width: 1200px;
 }
 
 .container {
@@ -241,7 +242,7 @@ onMounted(async () => {
 .article-list {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -335,31 +336,5 @@ onMounted(async () => {
   padding: 100px 0;
   color: #999;
   grid-column: 1 / -1;
-}
-
-@media (max-width: 768px) {
-  .category-container {
-    flex-direction: column;
-  }
-  
-  .category-sidebar {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  .category-menu {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-  }
-  
-  .category-item {
-    white-space: nowrap;
-    margin-bottom: 0;
-  }
-  
-  .article-list {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

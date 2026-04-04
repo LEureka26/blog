@@ -110,6 +110,7 @@ onMounted(async () => {
 <style scoped>
 .edit-profile {
   padding: 20px;
+  min-width: 1200px;
 }
 
 .container {
@@ -127,11 +128,5 @@ h1 {
   color: #333;
   margin-bottom: 30px;
   text-align: center;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 20px;
-  }
 }
 </style>

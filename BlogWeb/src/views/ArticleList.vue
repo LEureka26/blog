@@ -123,6 +123,7 @@ onMounted(() => {
 <style scoped>
 .article-list {
   width: 100%;
+  min-width: 1200px;
 }
 
 .container {
@@ -135,7 +136,7 @@ onMounted(() => {
 
 .article-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -242,20 +243,5 @@ onMounted(() => {
   margin-top: 30px;
   display: flex;
   justify-content: center;
-}
-
-@media (max-width: 768px) {
-  .filter-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .article-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .article-cover {
-    height: 150px;
-  }
 }
 </style>

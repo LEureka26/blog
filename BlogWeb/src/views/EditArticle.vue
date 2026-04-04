@@ -229,6 +229,7 @@ onMounted(() => {
   min-height: 100vh;
   padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-width: 1200px;
 }
 
 .edit-article-card {
