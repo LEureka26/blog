@@ -142,6 +142,9 @@ const handleSubmit = async () => {
       author_id: user.value?.id || 1 // 默认使用 ID 为 1 的用户
     }
     
+    console.log('提交的文章数据:', formData)
+    console.log('标签数据:', formData.tags)
+    
     const response = await articleAPI.createArticle(formData)
     
     ElMessage.success('文章创建成功')

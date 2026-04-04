@@ -23,8 +23,10 @@ import { ref, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElForm, ElFormItem, ElInput, ElButton } from 'element-plus'
 import { authAPI } from '../utils/api'
+import { useAuth } from '../context/AuthContext'
 
 const router = useRouter()
+const { user } = useAuth()
 const formRef = ref(null)
 
 const form = reactive({
@@ -71,6 +73,16 @@ const handleSubmit = async () => {
       user.value = responseData.user
       // 更新 localStorage 中的用户信息，确保数据一致性
       localStorage.setItem('user', JSON.stringify(responseData.user))
+    } else if (user.value) {
+      // 如果后端没有返回完整的用户信息，只更新表单中的字段
+      if (form.username) {
+        user.value.username = form.username
+      }
+      if (form.email) {
+        user.value.email = form.email
+      }
+      // 更新 localStorage 中的用户信息，确保数据一致性
+      localStorage.setItem('user', JSON.stringify(user.value))
     }
     ElMessage.success('个人信息更新成功')
     router.push('/user')

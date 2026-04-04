@@ -30,8 +30,8 @@
         <div v-html="article.content"></div>
       </div>
       <div v-if="article.tags" class="article-tags">
-        <span v-for="(tag, index) in article.tags" :key="index" class="tag">
-          {{ tag }}
+        <span v-for="(tag, index) in article.tags.slice(0, 2)" :key="index" class="tag">
+          #{{ tag }}
         </span>
       </div>
       <div class="article-actions">
@@ -216,11 +216,11 @@ onMounted(() => {
 
 .tag {
   display: inline-block;
-  background-color: #f0f0f0;
+  background-color: #ecf5ff;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
-  color: #666;
+  color: #409eff;
   margin-right: 8px;
   margin-bottom: 8px;
 }

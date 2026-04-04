@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { register, login } = require('../controllers/userController');
 const { pool } = require('../config/database');
-const { verifyToken } = require('../utils/auth');
+const { verifyToken } = require('../utils/auth.js');
 const multer = require('multer');
 const path = require('path');
 
 // 配置 multer 存储
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../uploads'));
+    const uploadsPath = path.join(__dirname, '../uploads');
+    console.log('Multer uploads path:', uploadsPath);
+    cb(null, uploadsPath);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -27,6 +29,10 @@ async function createArticle(req, res) {
     }
 
     const { title, content, category, tags, cover, author_id } = req.body;
+
+    console.log('接收到的文章数据:', req.body);
+    console.log('标签数据:', tags);
+    console.log('标签类型:', typeof tags);
 
     // 验证参数
     if (!title || !content || !category || !author_id) {
@@ -61,10 +67,25 @@ async function createArticle(req, res) {
       return res.status(400).json({ error: '分类不存在' });
     }
 
+    // 处理标签数据
+    let tagsJson = '[]';
+    if (tags && Array.isArray(tags)) {
+      tagsJson = JSON.stringify(tags);
+    } else if (tags && typeof tags === 'string') {
+      try {
+        const parsedTags = JSON.parse(tags);
+        tagsJson = JSON.stringify(Array.isArray(parsedTags) ? parsedTags : []);
+      } catch (e) {
+        tagsJson = '[]';
+      }
+    }
+
+    console.log('处理后的标签 JSON:', tagsJson);
+
     // 保存到数据库
     const [result] = await pool.execute(
       'INSERT INTO articles (title, content, cover, category, tags, author_id) VALUES (?, ?, ?, ?, ?, ?)',
-      [title, content, cover, category, JSON.stringify(tags), author_id]
+      [title, content, cover, category, tagsJson, author_id]
     );
 
     res.status(201).json({
@@ -432,8 +453,11 @@ async function updateUser(req, res) {
   }
 }
 
+// 编辑个人信息
+router.put('/user', updateUser);
+
 // 上传头像
-async function uploadAvatar(req, res) {
+router.post('/upload/avatar', upload.single('avatar'), async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -471,13 +495,7 @@ async function uploadAvatar(req, res) {
     }
     res.status(500).json({ error: '上传头像失败，请稍后重试' });
   }
-}
-
-// 编辑个人信息
-router.put('/user', updateUser);
-
-// 上传头像
-router.post('/upload/avatar', upload.single('avatar'), uploadAvatar);
+});
 
 // 首页-文章列表
 router.get('/articles', getArticles);
@@ -508,5 +526,14 @@ router.put('/articles/:id', updateArticle);
 
 // 删除文章
 router.delete('/articles/:id', deleteArticle);
+
+// 测试路由 - 检查 __dirname 的值
+router.get('/test-dirname', (req, res) => {
+  res.json({
+    __dirname: __dirname,
+    uploadsPath: path.join(__dirname, '../uploads'),
+    normalizedPath: path.normalize(path.join(__dirname, '../uploads'))
+  });
+});
 
 module.exports = router;
