@@ -74,7 +74,7 @@ const handleLogin = async () => {
     if (response.data.token) {
       login(response.data.user, response.data.token)
       ElMessage.success('登录成功')
-      router.push('/articleslist')
+      router.push('/articles')
     }
   } catch (error) {
     if (error.response) {

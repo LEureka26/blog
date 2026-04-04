@@ -3,10 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    redirect: '/articleslist'
+    redirect: '/articles'
   },
   {
-    path: '/articleslist',
+    path: '/articles',
     name: 'ArticleList',
     component: () => import('../views/ArticleList.vue')
   },
@@ -29,9 +29,21 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/user/edit',
+    name: 'EditProfile',
+    component: () => import('../views/EditProfile.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/articles/create',
     name: 'CreateArticle',
     component: () => import('../views/CreateArticle.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/articles/edit/:id',
+    name: 'EditArticle',
+    component: () => import('../views/EditArticle.vue'),
     meta: { requiresAuth: true }
   },
   {
@@ -49,7 +61,7 @@ const routes = [
   {
     path: '/search',
     name: 'Search',
-    redirect: '/articleslist',
+    redirect: '/articles',
     meta: { requiresAuth: true }
   }
 ]
@@ -65,7 +77,7 @@ router.beforeEach((to, from) => {
   if (to.meta.requiresAuth && !token) {
     return '/login'
   } else if ((to.path === '/login' || to.path === '/register') && token) {
-    return '/articleslist'
+    return '/articles'
   } else {
     return true
   }

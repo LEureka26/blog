@@ -145,7 +145,7 @@ const handleSubmit = async () => {
     const response = await articleAPI.createArticle(formData)
     
     ElMessage.success('文章创建成功')
-    router.push('/articleslist')
+    router.push('/articles')
   } catch (error) {
     if (error.response) {
       ElMessage.error(error.response.data.error || '创建文章失败')

@@ -2,6 +2,22 @@ const express = require('express');
 const router = express.Router();
 const { register, login } = require('../controllers/userController');
 const { pool } = require('../config/database');
+const { verifyToken } = require('../utils/auth');
+const multer = require('multer');
+const path = require('path');
+
+// 配置 multer 存储
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../uploads'));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // 创建文章
 async function createArticle(req, res) {
@@ -156,22 +172,153 @@ async function searchArticles(req, res) {
   }
 }
 
-// 首页-文章列表
-router.get('/articleslist', getArticles);
+// 编辑文章
+async function updateArticle(req, res) {
+  try {
+    const { id } = req.params;
+    const { title, content, category, tags, cover, author_id } = req.body;
 
-// 用户注册
-router.post('/register', register);
+    // 验证参数
+    if (!title || !content || !category || !author_id) {
+      return res.status(400).json({ error: '标题、内容、分类和作者 ID 为必填项' });
+    }
 
-// 用户登录
-router.post('/login', login);
+    if (title.length < 1 || title.length > 255) {
+      return res.status(400).json({ error: '标题长度必须在 1-255 字符之间' });
+    }
 
-// 用户个人中心
-router.get('/user', (req, res) => {
-  res.send('用户个人中心');
-});
+    if (content.length < 1) {
+      return res.status(400).json({ error: '内容不能为空' });
+    }
 
-// 发布文章
-router.post('/articles', createArticle);
+    // 验证用户是否存在
+    const [users] = await pool.execute(
+      'SELECT * FROM users WHERE id = ?',
+      [author_id]
+    );
+    
+    if (users.length === 0) {
+      return res.status(400).json({ error: '用户不存在，请先注册' });
+    }
+
+    // 验证分类是否存在
+    const [categories] = await pool.execute(
+      'SELECT * FROM categories WHERE name = ?',
+      [category]
+    );
+    
+    if (categories.length === 0) {
+      return res.status(400).json({ error: '分类不存在' });
+    }
+
+    // 验证用户是否是文章作者
+    const [articles] = await pool.execute(
+      'SELECT * FROM articles WHERE id = ? AND author_id = ?',
+      [id, author_id]
+    );
+    
+    if (articles.length === 0) {
+      return res.status(400).json({ error: '您没有权限编辑这篇文章' });
+    }
+
+    // 保存到数据库
+    const [result] = await pool.execute(
+      'UPDATE articles SET title = ?, content = ?, cover = ?, category = ?, tags = ? WHERE id = ?',
+      [title, content, cover, category, JSON.stringify(tags), id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: '文章不存在' });
+    }
+
+    res.status(200).json({
+      message: '文章编辑成功'
+    });
+  } catch (error) {
+    console.error('编辑文章失败:', error);
+    res.status(500).json({ error: '编辑文章失败，请稍后重试' });
+  }
+}
+
+// 删除文章
+async function deleteArticle(req, res) {
+  try {
+    const { id } = req.params;
+    const { author_id } = req.body;
+
+    // 验证参数
+    if (!author_id) {
+      return res.status(400).json({ error: '作者 ID 为必填项' });
+    }
+
+    // 验证用户是否存在
+    const [users] = await pool.execute(
+      'SELECT * FROM users WHERE id = ?',
+      [author_id]
+    );
+    
+    if (users.length === 0) {
+      return res.status(400).json({ error: '用户不存在，请先注册' });
+    }
+
+    // 验证用户是否是文章作者
+    const [articles] = await pool.execute(
+      'SELECT * FROM articles WHERE id = ? AND author_id = ?',
+      [id, author_id]
+    );
+    
+    if (articles.length === 0) {
+      return res.status(400).json({ error: '您没有权限删除这篇文章' });
+    }
+
+    // 删除文章
+    const [result] = await pool.execute(
+      'DELETE FROM articles WHERE id = ?',
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: '文章不存在' });
+    }
+
+    res.status(200).json({
+      message: '文章删除成功'
+    });
+  } catch (error) {
+    console.error('删除文章失败:', error);
+    res.status(500).json({ error: '删除文章失败，请稍后重试' });
+  }
+}
+
+// 获取用户信息
+async function getUser(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: '未提供认证令牌' });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+
+    const [users] = await pool.execute(
+      'SELECT id, username, email, avatar, created_at, updated_at FROM users WHERE id = ?',
+      [decoded.userId]
+    );
+
+    if (users.length === 0) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+
+    res.status(200).json(users[0]);
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ error: '无效的认证令牌' });
+    }
+    res.status(500).json({ error: '获取用户信息失败，请稍后重试' });
+  }
+}
 
 // 分类列表
 async function getCategories(req, res) {
@@ -186,6 +333,167 @@ async function getCategories(req, res) {
   }
 }
 
+// 编辑个人信息
+async function updateUser(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: '未提供认证令牌' });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+
+    const { username, email, avatar } = req.body;
+
+    // 验证参数
+    if (!username && !email && !avatar) {
+      return res.status(400).json({ error: '至少需要提供一项要更新的信息' });
+    }
+
+    // 验证邮箱格式
+    if (email) {
+      const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: '邮箱格式不正确' });
+      }
+    }
+
+    // 验证用户名长度
+    if (username && (username.length < 3 || username.length > 20)) {
+      return res.status(400).json({ error: '用户名长度必须在 3-20 字符之间' });
+    }
+
+    // 检查用户名是否已存在
+    if (username) {
+      const [existingUsers] = await pool.execute(
+        'SELECT id FROM users WHERE username = ? AND id != ?',
+        [username, decoded.userId]
+      );
+
+      if (existingUsers.length > 0) {
+        return res.status(400).json({ error: '用户名已存在' });
+      }
+    }
+
+    // 检查邮箱是否已存在
+    if (email) {
+      const [existingEmails] = await pool.execute(
+        'SELECT id FROM users WHERE email = ? AND id != ?',
+        [email, decoded.userId]
+      );
+
+      if (existingEmails.length > 0) {
+        return res.status(400).json({ error: '邮箱已存在' });
+      }
+    }
+
+    // 获取当前用户信息
+    const [currentUsers] = await pool.execute(
+      'SELECT username, email, avatar FROM users WHERE id = ?',
+      [decoded.userId]
+    );
+
+    if (currentUsers.length === 0) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+
+    const currentUser = currentUsers[0];
+    const updateUsername = username || currentUser.username;
+    const updateEmail = email || currentUser.email;
+    const updateAvatar = avatar || currentUser.avatar;
+
+    // 更新用户信息
+    const [result] = await pool.execute(
+      'UPDATE users SET username = ?, email = ?, avatar = ? WHERE id = ?',
+      [updateUsername, updateEmail, updateAvatar, decoded.userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+
+    // 获取更新后的用户信息
+    const [users] = await pool.execute(
+      'SELECT id, username, email, avatar, created_at, updated_at FROM users WHERE id = ?',
+      [decoded.userId]
+    );
+
+    res.status(200).json({
+      message: '个人信息更新成功',
+      user: users[0]
+    });
+  } catch (error) {
+    console.error('更新个人信息失败:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ error: '无效的认证令牌' });
+    }
+    res.status(500).json({ error: '更新个人信息失败，请稍后重试' });
+  }
+}
+
+// 上传头像
+async function uploadAvatar(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: '未提供认证令牌' });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+
+    if (!req.file) {
+      return res.status(400).json({ error: '请选择要上传的文件' });
+    }
+
+    // 构建头像 URL
+    const avatarUrl = `http://localhost:3001/uploads/${req.file.filename}`;
+
+    // 更新用户头像
+    const [result] = await pool.execute(
+      'UPDATE users SET avatar = ? WHERE id = ?',
+      [avatarUrl, decoded.userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+
+    res.status(200).json({
+      message: '头像上传成功',
+      url: avatarUrl
+    });
+  } catch (error) {
+    console.error('上传头像失败:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ error: '无效的认证令牌' });
+    }
+    res.status(500).json({ error: '上传头像失败，请稍后重试' });
+  }
+}
+
+// 编辑个人信息
+router.put('/user', updateUser);
+
+// 上传头像
+router.post('/upload/avatar', upload.single('avatar'), uploadAvatar);
+
+// 首页-文章列表
+router.get('/articles', getArticles);
+
+// 用户注册
+router.post('/register', register);
+
+// 用户登录
+router.post('/login', login);
+
+// 用户个人中心
+router.get('/user', getUser);
+
+// 发布文章
+router.post('/articles', createArticle);
+
 // 分类列表
 router.get('/categories', getCategories);
 
@@ -194,5 +502,11 @@ router.get('/articles/:id', getArticle);
 
 // 文章搜索
 router.get('/articles/search=:search', searchArticles);
+
+// 编辑文章
+router.put('/articles/:id', updateArticle);
+
+// 删除文章
+router.delete('/articles/:id', deleteArticle);
 
 module.exports = router;

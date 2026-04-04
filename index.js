@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const app = express();
 const port = 3001;
 
@@ -8,14 +9,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+// 静态文件服务
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // 引入路由
 const routes = require('./router/index');
 
-// 根路径重定向到 /articles
-app.get('/', (req, res) => {
-  res.redirect('/articles');
-});
-
+// 使用路由
 app.use('/', routes);
 
 // 启动服务器
