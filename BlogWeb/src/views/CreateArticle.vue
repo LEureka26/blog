@@ -57,7 +57,7 @@
             v-model="articleForm.content"
             type="textarea"
             :rows="10"
-            placeholder="请输入文章内容（Markdown 格式）"
+            placeholder="请输入文章内容"
           />
         </el-form-item>
         

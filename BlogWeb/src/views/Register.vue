@@ -5,35 +5,35 @@
         <h2>用户注册</h2>
       </template>
       
-      <el-form :model="registerForm" :rules="rules" ref="registerFormRef" label-width="80px">
-        <el-form-item label="用户名" prop="username">
+      <el-form :model="registerForm" :rules="rules" ref="registerFormRef" label-width="80px" @keyup.enter="handleRegister">
+        <el-form-item label="用&nbsp;&nbsp;户&nbsp;名" prop="username">
           <el-input v-model="registerForm.username" placeholder="请输入用户名" />
         </el-form-item>
-        
-        <el-form-item label="邮箱" prop="email">
+
+        <el-form-item label="邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;箱" prop="email">
           <el-input v-model="registerForm.email" placeholder="请输入邮箱" />
         </el-form-item>
-        
-        <el-form-item label="密码" prop="password">
-          <el-input 
-            v-model="registerForm.password" 
-            type="password" 
+
+        <el-form-item label="密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码"  prop="password">
+          <el-input
+            v-model="registerForm.password"
+            type="password"
             placeholder="请输入密码"
             show-password
           />
         </el-form-item>
-        
+
         <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input 
-            v-model="registerForm.confirmPassword" 
-            type="password" 
+          <el-input
+            v-model="registerForm.confirmPassword"
+            type="password"
             placeholder="请再次输入密码"
             show-password
           />
         </el-form-item>
         
         <el-form-item>
-          <el-button type="primary" @click="handleRegister" :loading="loading" style="width: 100%">
+          <el-button type="primary" @click="handleRegister" :loading="loading" style="width: 80%">
             注册
           </el-button>
         </el-form-item>
@@ -145,7 +145,7 @@ const handleRegister = async () => {
 }
 
 .links {
-  width: 100%;
+  width: 70%;
   text-align: center;
 }
 

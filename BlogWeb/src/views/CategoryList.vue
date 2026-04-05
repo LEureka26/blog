@@ -3,7 +3,6 @@
     <div class="container">
       <div class="header">
         <h1>分类列表</h1>
-        <el-button type="primary" @click="navigateToCreateArticle">写文章</el-button>
       </div>
 
       <div class="category-container">
@@ -61,19 +60,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { articleAPI, categoryAPI } from '@/utils/api'
-import { ElButton } from 'element-plus'
 
-const router = useRouter()
 const categories = ref([])
 const articles = ref([])
 const activeCategory = ref('')
-
-// 导航到写文章页面
-const navigateToCreateArticle = () => {
-  router.push('/articles/create')
-}
 
 // 选择分类
 const selectCategory = (category) => {
@@ -177,12 +168,16 @@ onMounted(async () => {
 
 <style scoped>
 .category-list {
-  padding: 20px;
-  min-width: 1200px;
+  width: 80vw;
+  margin: 20px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
 }
 

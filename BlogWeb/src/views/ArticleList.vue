@@ -5,18 +5,20 @@
       <div class="article-grid">
         <div class="article-card" v-for="article in articles" :key="article.id">
           <router-link :to="`/articles/${article.id}`" class="article-link">
-            <div v-if="article.cover" class="article-cover">
-              <img :src="article.cover" :alt="article.title">
-            </div>
-            <div class="article-content">
+            <div class="article-body">
               <h3 class="article-title">{{ article.title }}</h3>
-              <div class="article-meta">
-                <span class="article-category">{{ article.category }}</span>
-                <span class="article-views">浏览 {{ article.views || 0 }} 次</span>
+              <div v-if="article.cover" class="article-cover">
+                <img :src="article.cover" :alt="article.title">
               </div>
-              <p class="article-excerpt">{{ truncateContent(article.content) }}</p>
-              <div class="article-tags">
-                <span class="tag" v-for="tag in (article.tags ? JSON.parse(article.tags) : [])" :key="tag">#{{ tag }}</span>
+              <div class="article-content">
+                <div class="article-meta">
+                  <span class="article-category">{{ article.category }}</span>
+                  <span class="article-views">浏览 {{ article.views || 0 }} 次</span>
+                </div>
+                <p class="article-excerpt">{{ truncateContent(article.content) }}</p>
+                <div class="article-tags">
+                  <span class="tag" v-for="tag in (article.tags ? JSON.parse(article.tags) : [])" :key="tag">#{{ tag }}</span>
+                </div>
               </div>
             </div>
           </router-link>
@@ -34,6 +36,8 @@
           :page-sizes="[10, 20, 50]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
+          :prev-text="'上一页'"
+          :next-text="'下一页'"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -122,12 +126,16 @@ onMounted(() => {
 
 <style scoped>
 .article-list {
-  width: 100%;
-  min-width: 1200px;
+  width: 65vw;
+  margin: 50px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -136,11 +144,14 @@ onMounted(() => {
 
 .article-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 50px;
+  justify-items: center;
 }
 
 .article-card {
+  width: 80%;
+  min-width: 400px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -159,24 +170,7 @@ onMounted(() => {
   color: #333;
 }
 
-.article-cover {
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-}
-
-.article-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s;
-}
-
-.article-card:hover .article-cover img {
-  transform: scale(1.05);
-}
-
-.article-content {
+.article-body {
   padding: 20px;
 }
 
@@ -191,13 +185,37 @@ onMounted(() => {
   color: #409eff;
 }
 
+.article-cover {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  margin-bottom: 0;
+  border-radius: 15px;
+}
+
+.article-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.article-card:hover .article-cover img {
+  transform: scale(1.05);
+}
+
+.article-content {
+  width: 100%;
+}
+
 .article-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin: 10px 0px;
   font-size: 12px;
   color: #999;
+  padding: 0px 5px;
 }
 
 .article-category {
@@ -217,12 +235,16 @@ onMounted(() => {
   -webkit-line-clamp: 3;
   line-clamp: 3;
   -webkit-box-orient: vertical;
+  padding: 0px 30px;
+  text-indent: 2em;
+  line-height: 1.6em;
 }
 
 .article-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  padding: 0px 5px;
 }
 
 .tag {

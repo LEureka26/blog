@@ -5,22 +5,22 @@
         <h2>用户登录</h2>
       </template>
       
-      <el-form :model="loginForm" :rules="rules" ref="loginFormRef" label-width="80px">
+      <el-form :model="loginForm" :rules="rules" ref="loginFormRef" label-width="80px" @keyup.enter="handleLogin">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入用户名" />
         </el-form-item>
-        
-        <el-form-item label="密码" prop="password">
-          <el-input 
-            v-model="loginForm.password" 
-            type="password" 
+
+        <el-form-item label="密&emsp;码"  prop="password">
+          <el-input
+            v-model="loginForm.password"
+            type="password"
             placeholder="请输入密码"
             show-password
           />
         </el-form-item>
         
         <el-form-item>
-          <el-button type="primary" @click="handleLogin" :loading="loading" style="width: 100%">
+          <el-button type="primary" @click="handleLogin" :loading="loading" style="width: 80%">
             登录
           </el-button>
         </el-form-item>
@@ -112,7 +112,7 @@ const handleLogin = async () => {
 }
 
 .links {
-  width: 100%;
+  width: 70%;
   text-align: center;
 }
 

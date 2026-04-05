@@ -184,19 +184,19 @@ const getCategories = async () => {
 // 添加标签
 const addTag = () => {
   const tagValue = newTag.value.trim()
-  console.log('=== addTag 被调用 ===')
-  console.log('输入的标签值:', tagValue)
-  console.log('当前 tags 数组:', [...articleForm.value.tags])
+  // console.log('=== addTag 被调用 ===')
+  // console.log('输入的标签值:', tagValue)
+  // console.log('当前 tags 数组:', [...articleForm.value.tags])
   
   if (tagValue && !articleForm.value.tags.includes(tagValue)) {
     articleForm.value.tags.push(tagValue)
-    console.log('标签添加成功，添加后的 tags:', [...articleForm.value.tags])
+    // console.log('标签添加成功，添加后的 tags:', [...articleForm.value.tags])
     newTag.value = ''
   } else {
     if (!tagValue) {
-      console.log('标签值为空，不添加')
+      // console.log('标签值为空，不添加')
     } else {
-      console.log('标签已存在，不添加')
+      // console.log('标签已存在，不添加')
     }
   }
 }
@@ -218,13 +218,13 @@ const submitForm = async () => {
     submitting.value = true
     
     const id = route.params.id
-    console.log('=== 提交编辑文章 ===')
-    console.log('文章 ID:', id)
-    console.log('提交的表单数据:', JSON.stringify(articleForm.value))
-    console.log('标签数据:', articleForm.value.tags)
-    console.log('标签类型:', typeof articleForm.value.tags)
-    console.log('标签数组长度:', articleForm.value.tags.length)
-    console.log('标签数组内容:', [...articleForm.value.tags])
+    // console.log('=== 提交编辑文章 ===')
+    // console.log('文章 ID:', id)
+    // console.log('提交的表单数据:', JSON.stringify(articleForm.value))
+    // console.log('标签数据:', articleForm.value.tags)
+    // console.log('标签类型:', typeof articleForm.value.tags)
+    // console.log('标签数组长度:', articleForm.value.tags.length)
+    // console.log('标签数组内容:', [...articleForm.value.tags])
     
     // 创建一个新的对象来确保数据正确传递
     const submitData = {
@@ -236,8 +236,8 @@ const submitForm = async () => {
       author_id: articleForm.value.author_id
     }
     
-    console.log('实际提交的数据:', JSON.stringify(submitData))
-    console.log('实际提交的标签:', submitData.tags)
+    // console.log('实际提交的数据:', JSON.stringify(submitData))
+    // console.log('实际提交的标签:', submitData.tags)
     
     await articleAPI.updateArticle(id, submitData)
     
