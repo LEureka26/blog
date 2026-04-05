@@ -4,7 +4,8 @@ export const authAPI = {
   register: (data) => api.post('/register', data),
   login: (data) => api.post('/login', data),
   getUser: () => api.get('/user'),
-  updateUser: (data) => api.put('/user', data)
+  updateUser: (data) => api.put('/user', data),
+  getUserStats: () => api.get('/user/stats')
 }
 
 export const articleAPI = {

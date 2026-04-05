@@ -22,21 +22,30 @@
         </el-form-item>
         
         <el-form-item label="标签" prop="tags">
-          <el-tag
-            v-for="tag in articleForm.tags"
-            :key="tag"
-            closable
-            @close="removeTag(tag)"
-            class="tag-item"
-          >
-            {{ tag }}
-          </el-tag>
-          <el-input
-            v-model="newTag"
-            placeholder="请输入标签，按回车添加"
-            @keyup.enter="addTag"
-            class="tag-input"
-          />
+          <div class="tags-container">
+            <div class="tags-list">
+              <el-tag
+                v-for="(tag, index) in articleForm.tags"
+                :key="index"
+                closable
+                @close="removeTag(tag)"
+                class="tag-item"
+              >
+                {{ tag }}
+              </el-tag>
+            </div>
+            <div class="tag-input-wrapper">
+              <el-input
+                v-model="newTag"
+                placeholder="请输入标签"
+                class="tag-input"
+                clearable
+              />
+              <el-button type="primary" size="small" @click="addTag" :disabled="!newTag.trim()">
+                添加
+              </el-button>
+            </div>
+          </div>
         </el-form-item>
         
         <el-form-item label="封面" prop="cover">
@@ -116,8 +125,9 @@ onMounted(async () => {
 })
 
 const addTag = () => {
-  if (newTag.value && !articleForm.tags.includes(newTag.value)) {
-    articleForm.tags.push(newTag.value)
+  const tagValue = newTag.value.trim()
+  if (tagValue && !articleForm.tags.includes(tagValue)) {
+    articleForm.tags.push(tagValue)
     newTag.value = ''
   }
 }
@@ -191,8 +201,29 @@ const handleSubmit = async () => {
   margin-bottom: 10px;
 }
 
-.tag-input {
-  margin-top: 10px;
+.tags-container {
   width: 100%;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  min-height: 32px;
+  padding: 5px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.tag-input-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.tag-input {
+  flex: 1;
 }
 </style>

@@ -199,6 +199,12 @@ async function updateArticle(req, res) {
     const { id } = req.params;
     const { title, content, category, tags, cover, author_id } = req.body;
 
+    console.log('=== 编辑文章请求 ===');
+    console.log('文章 ID:', id);
+    console.log('接收到的完整数据:', JSON.stringify(req.body));
+    console.log('标签原始值:', tags);
+    console.log('标签类型:', typeof tags);
+
     // 验证参数
     if (!title || !content || !category || !author_id) {
       return res.status(400).json({ error: '标题、内容、分类和作者 ID 为必填项' });
@@ -242,11 +248,30 @@ async function updateArticle(req, res) {
       return res.status(400).json({ error: '您没有权限编辑这篇文章' });
     }
 
+    let tagsJson = '[]';
+    if (tags && Array.isArray(tags)) {
+      tagsJson = JSON.stringify(tags);
+      console.log('标签是数组，直接序列化:', tagsJson);
+    } else if (tags && typeof tags === 'string') {
+      try {
+        const parsedTags = JSON.parse(tags);
+        tagsJson = JSON.stringify(Array.isArray(parsedTags) ? parsedTags : []);
+        console.log('标签是字符串，解析后序列化:', tagsJson);
+      } catch (e) {
+        tagsJson = '[]';
+        console.log('标签字符串解析失败，使用空数组');
+      }
+    } else {
+      console.log('标签为空或类型不正确，使用空数组');
+    }
+
     // 保存到数据库
     const [result] = await pool.execute(
       'UPDATE articles SET title = ?, content = ?, cover = ?, category = ?, tags = ? WHERE id = ?',
-      [title, content, cover, category, JSON.stringify(tags), id]
+      [title, content, cover, category, tagsJson, id]
     );
+
+    console.log('更新结果: 影响行数 =', result.affectedRows);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: '文章不存在' });
@@ -338,6 +363,34 @@ async function getUser(req, res) {
       return res.status(401).json({ error: '无效的认证令牌' });
     }
     res.status(500).json({ error: '获取用户信息失败，请稍后重试' });
+  }
+}
+
+async function getUserStats(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: '未提供认证令牌' });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+
+    const [articles] = await pool.execute(
+      'SELECT COUNT(*) as articleCount, COALESCE(SUM(views), 0) as totalViews FROM articles WHERE author_id = ?',
+      [decoded.userId]
+    );
+
+    res.status(200).json({
+      articleCount: articles[0].articleCount || 0,
+      totalViews: articles[0].totalViews || 0
+    });
+  } catch (error) {
+    console.error('获取用户统计信息失败:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ error: '无效的认证令牌' });
+    }
+    res.status(500).json({ error: '获取用户统计信息失败，请稍后重试' });
   }
 }
 
@@ -508,6 +561,9 @@ router.post('/login', login);
 
 // 用户个人中心
 router.get('/user', getUser);
+
+// 用户统计信息
+router.get('/user/stats', getUserStats);
 
 // 发布文章
 router.post('/articles', createArticle);

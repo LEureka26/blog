@@ -3,15 +3,30 @@
     <div class="container">
       <div class="user-header">
         <div class="avatar-section">
-          <img :src="user.avatar || defaultAvatar" alt="用户头像" class="avatar">
+          <img
+            :src="user.avatar || defaultAvatar"
+            alt="用户头像"
+            class="avatar"
+          />
           <div class="avatar-actions">
-            <el-button type="primary" size="small" @click="showAvatarDialog = true">更换头像</el-button>
+            <el-button
+              type="primary"
+              size="small"
+              @click="showAvatarDialog = true"
+              >更换头像</el-button
+            >
           </div>
         </div>
         <div class="user-info">
           <h2 class="username">{{ user.username }}</h2>
           <p class="email">{{ user.email }}</p>
           <p class="join-date">加入时间：{{ formatDate(user.created_at) }}</p>
+        </div>
+        <div class="user-actions">
+          <el-button class="icon" tag="button"  @click="navigateToEditProfile">
+            <img src="../assets/icon.png" alt="编辑个人信息">
+          </el-button>
+          <el-button class="icon-text" tag="button" @click="handleLogout"><span>退出登录</span></el-button>
         </div>
       </div>
 
@@ -26,27 +41,25 @@
         </div>
       </div>
 
-      <div class="user-actions">
-        <el-button type="primary" @click="navigateToEditProfile">编辑个人信息</el-button>
-        <el-button @click="navigateToCreateArticle">写文章</el-button>
-        <el-button type="danger" @click="handleLogout">退出登录</el-button>
-      </div>
-
       <!-- 头像选择对话框 -->
       <el-dialog v-model="showAvatarDialog" title="选择头像" width="500px">
         <div class="avatar-preview">
-          <img :src="selectedAvatar || defaultAvatar" alt="预览头像" class="preview-avatar">
+          <img
+            :src="selectedAvatar || defaultAvatar"
+            alt="预览头像"
+            class="preview-avatar"
+          />
           <p class="preview-text">当前选择</p>
         </div>
         <div class="avatar-grid">
-          <div 
-            v-for="(avatar, index) in defaultAvatars" 
+          <div
+            v-for="(avatar, index) in defaultAvatars"
             :key="index"
             class="avatar-option"
             :class="{ active: selectedAvatar === avatar }"
             @click="selectAvatar(avatar)"
           >
-            <img :src="avatar" :alt="`头像 ${index + 1}`">
+            <img :src="avatar" :alt="`头像 ${index + 1}`" />
           </div>
         </div>
         <div class="avatar-upload">
@@ -71,34 +84,34 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, ElButton, ElDialog, ElUpload } from 'element-plus'
-import { authAPI } from '../utils/api'
-import { useAuth } from '../context/AuthContext'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage, ElButton, ElDialog, ElUpload } from "element-plus";
+import { authAPI } from "../utils/api";
+import { useAuth } from "../context/AuthContext";
 
 // 导入本地头像图片
-import avatar1 from '../assets/1.jpeg'
-import avatar2 from '../assets/2.jpeg'
-import avatar3 from '../assets/3.jpeg'
-import avatar4 from '../assets/4.jpeg'
-import avatar5 from '../assets/5.jpeg'
-import avatar6 from '../assets/6.jpeg'
-import avatar7 from '../assets/7.jpg'
-import avatar8 from '../assets/8.jpeg'
-import avatar9 from '../assets/9.jpeg'
-import avatar10 from '../assets/10.jpg'
-import defaultAvatarImg from '../assets/1.jpeg'
+import avatar1 from "../assets/1.jpeg";
+import avatar2 from "../assets/2.jpeg";
+import avatar3 from "../assets/3.jpeg";
+import avatar4 from "../assets/4.jpeg";
+import avatar5 from "../assets/5.jpeg";
+import avatar6 from "../assets/6.jpeg";
+import avatar7 from "../assets/7.jpg";
+import avatar8 from "../assets/8.jpeg";
+import avatar9 from "../assets/9.jpeg";
+import avatar10 from "../assets/10.jpg";
+import defaultAvatarImg from "../assets/1.jpeg";
 
-const router = useRouter()
-const { logout, user } = useAuth()
+const router = useRouter();
+const { logout, user } = useAuth();
 const userStats = ref({
   articleCount: 0,
-  totalViews: 0
-})
-const showAvatarDialog = ref(false)
-const selectedAvatar = ref('')
-const defaultAvatar = defaultAvatarImg
+  totalViews: 0,
+});
+const showAvatarDialog = ref(false);
+const selectedAvatar = ref("");
+const defaultAvatar = defaultAvatarImg;
 const defaultAvatars = [
   avatar1,
   avatar2,
@@ -109,136 +122,131 @@ const defaultAvatars = [
   avatar7,
   avatar8,
   avatar9,
-  avatar10
-]
-const uploadUrl = 'http://localhost:3001/upload/avatar'
+  avatar10,
+];
+const uploadUrl = "http://localhost:3001/upload/avatar";
 const uploadHeaders = {
-  'Authorization': `Bearer ${localStorage.getItem('token')}`
-}
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+};
 
 // 格式化日期
 const formatDate = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long'
-  })
-}
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "long",
+  });
+};
 
 // 获取用户信息
 const getUserInfo = async () => {
   try {
-    const response = await authAPI.getUser()
+    const response = await authAPI.getUser();
     // 检查响应格式，确保使用正确的数据结构
-    const userData = response.data || response
-    user.value = userData
-    selectedAvatar.value = userData.avatar || defaultAvatars[0]
+    const userData = response.data || response;
+    user.value = userData;
+    selectedAvatar.value = userData.avatar || defaultAvatars[0];
     // 更新 localStorage 中的用户信息，确保数据一致性
-    localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem("user", JSON.stringify(userData));
   } catch (error) {
-    console.error('获取用户信息失败:', error)
-    ElMessage.error('获取用户信息失败')
+    console.error("获取用户信息失败:", error);
+    ElMessage.error("获取用户信息失败");
   }
-}
+};
 
 // 获取用户统计信息
 const getUserStats = async () => {
   try {
-    // 这里需要调用后端API获取用户统计信息
-    // 暂时使用模拟数据
+    const response = await authAPI.getUserStats();
+    const statsData = response.data || response;
     userStats.value = {
-      articleCount: 0,
-      totalViews: 0
-    }
+      articleCount: statsData.articleCount || 0,
+      totalViews: statsData.totalViews || 0,
+    };
   } catch (error) {
-    console.error('获取用户统计信息失败:', error)
+    console.error("获取用户统计信息失败:", error);
   }
-}
+};
 
 // 选择头像
 const selectAvatar = (avatar) => {
-  selectedAvatar.value = avatar
-}
+  selectedAvatar.value = avatar;
+};
 
 // 保存头像
 const saveAvatar = async () => {
   try {
     // 调用后端API保存头像
-    const response = await authAPI.updateUser({ avatar: selectedAvatar.value })
+    const response = await authAPI.updateUser({ avatar: selectedAvatar.value });
     // 检查响应格式，确保使用正确的数据结构
-    const responseData = response.data || response
+    const responseData = response.data || response;
     // 使用后端返回的完整用户信息
     if (responseData.user) {
-      user.value = responseData.user
+      user.value = responseData.user;
       // 更新 localStorage 中的用户信息，确保数据一致性
-      localStorage.setItem('user', JSON.stringify(responseData.user))
+      localStorage.setItem("user", JSON.stringify(responseData.user));
     } else {
-      user.value.avatar = selectedAvatar.value
+      user.value.avatar = selectedAvatar.value;
       // 更新 localStorage 中的用户信息，确保数据一致性
-      localStorage.setItem('user', JSON.stringify(user.value))
+      localStorage.setItem("user", JSON.stringify(user.value));
     }
-    showAvatarDialog.value = false
-    ElMessage.success('头像更新成功')
+    showAvatarDialog.value = false;
+    ElMessage.success("头像更新成功");
   } catch (error) {
-    console.error('保存头像失败:', error)
-    ElMessage.error('保存头像失败')
+    console.error("保存头像失败:", error);
+    ElMessage.error("保存头像失败");
   }
-}
+};
 
 // 上传前验证
 const beforeUpload = (file) => {
-  const isImage = file.type.startsWith('image/')
-  const isLt2M = file.size / 1024 / 1024 < 2
+  const isImage = file.type.startsWith("image/");
+  const isLt2M = file.size / 1024 / 1024 < 2;
 
   if (!isImage) {
-    ElMessage.error('只能上传图片文件!')
-    return false
+    ElMessage.error("只能上传图片文件!");
+    return false;
   }
   if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB!')
-    return false
+    ElMessage.error("图片大小不能超过 2MB!");
+    return false;
   }
-  return true
-}
+  return true;
+};
 
 // 上传成功
 const handleUploadSuccess = (response) => {
   if (response.url) {
-    selectedAvatar.value = response.url
-    ElMessage.success('头像上传成功，请点击确定按钮保存')
+    selectedAvatar.value = response.url;
+    ElMessage.success("头像上传成功，请点击确定按钮保存");
   } else {
-    ElMessage.error('头像上传失败')
+    ElMessage.error("头像上传失败");
   }
-}
+};
 
 // 导航到编辑个人信息页面
 const navigateToEditProfile = () => {
-  router.push('/user/edit')
-}
-
-// 导航到写文章页面
-const navigateToCreateArticle = () => {
-  router.push('/articles/create')
-}
+  router.push("/user/edit");
+};
 
 // 退出登录
 const handleLogout = async () => {
   try {
-    await logout()
-    router.push('/login')
-    ElMessage.success('退出登录成功')
+    await logout();
+    router.push("/login");
+    ElMessage.success("退出登录成功");
   } catch (error) {
-    console.error('退出登录失败:', error)
-    ElMessage.error('退出登录失败')
+    console.error("退出登录失败:", error);
+    ElMessage.error("退出登录失败");
   }
-}
+};
 
 // 初始化
 onMounted(async () => {
-  await getUserInfo()
-  await getUserStats()
-})
+  await getUserInfo();
+  await getUserStats();
+});
 </script>
 
 <style scoped>
@@ -286,23 +294,25 @@ onMounted(async () => {
 
 .user-info {
   flex: 1;
+  position: relative;
+  bottom: 15px;
+  text-align: left;
 }
 
 .username {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: normal;
   color: #333;
-  margin-bottom: 10px;
-}
-
-.email {
-  font-size: 16px;
-  color: #666;
   margin-bottom: 5px;
 }
 
-.join-date {
+.email {
   font-size: 14px;
+  color: #666;
+}
+
+.join-date {
+  font-size: 12px;
   color: #999;
 }
 
@@ -336,13 +346,32 @@ onMounted(async () => {
   color: #666;
 }
 
-.user-actions {
-  display: flex;
-  gap: 15px;
-  padding: 30px;
-  background: #fff;
+.user-actions .icon{
+  width: 35px;
+  height: 30px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border: 1px solid #e1e1e1;
+  cursor: pointer;
+}
+.user-actions .icon:hover{
+  background-color: #f1f2f6;
+}
+.user-actions .icon-text{
+  border-radius: 8px;
+  background-color: #fff;
+  border: 1px solid #e1e1e1;
+  cursor: pointer;
+}
+.user-actions .icon-text span{
+  color: black;
+}
+.user-actions .icon-text:hover{
+  background-color: #f1f2f6;
+}
+.user-actions img{
+  width: 20px;
+  height: 20px;
 }
 
 .avatar-grid {
