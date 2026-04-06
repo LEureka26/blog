@@ -525,7 +525,7 @@ router.post('/upload/avatar', upload.single('avatar'), async (req, res) => {
     }
 
     // 构建头像 URL
-    const avatarUrl = `${process.env.BACKEND_URL || 'http://localhost:3001'}/uploads/${req.file.filename}`;
+    const avatarUrl = `http://localhost:3001/uploads/${req.file.filename}`;
 
     // 更新用户头像
     const [result] = await pool.execute(
