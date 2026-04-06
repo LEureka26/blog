@@ -102,11 +102,12 @@ onUnmounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
-  min-width: 1200px;
+  width: 100%;
 }
 
 .header-container {
-  max-width: 1200px;
+  width: 90%;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
