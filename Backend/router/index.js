@@ -30,9 +30,9 @@ async function createArticle(req, res) {
 
     const { title, content, category, tags, cover, author_id } = req.body;
 
-    console.log('接收到的文章数据:', req.body);
-    console.log('标签数据:', tags);
-    console.log('标签类型:', typeof tags);
+    // console.log('接收到的文章数据:', req.body);
+    // console.log('标签数据:', tags);
+    // console.log('标签类型:', typeof tags);
 
     // 验证参数
     if (!title || !content || !category || !author_id) {
@@ -525,7 +525,7 @@ router.post('/upload/avatar', upload.single('avatar'), async (req, res) => {
     }
 
     // 构建头像 URL
-    const avatarUrl = `http://localhost:3001/uploads/${req.file.filename}`;
+    const avatarUrl = `${process.env.BACKEND_URL || 'http://localhost:3001'}/uploads/${req.file.filename}`;
 
     // 更新用户头像
     const [result] = await pool.execute(
