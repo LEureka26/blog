@@ -34,6 +34,5 @@ body {
 .main-content {
   width: 100%;
   min-height: calc(100vh - 60px);
-  padding: 20px 0;
 }
 </style>

@@ -237,11 +237,13 @@ onMounted(async () => {
 .article-list {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
+  justify-items: center;
   gap: 20px;
 }
 
 .article-card {
+  width: 70%;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

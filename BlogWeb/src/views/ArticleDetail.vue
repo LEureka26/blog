@@ -128,10 +128,12 @@ onMounted(() => {
 
 <style scoped>
 .article-detail {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  min-width: 1200px;
+  width: 70%;
+  margin: 20px auto 0;
+  padding: 30px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .loading {
@@ -189,9 +191,9 @@ onMounted(() => {
 }
 
 .article-cover img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
+  width: 90%;
+  height: 300px;
+  border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -199,6 +201,8 @@ onMounted(() => {
   margin-bottom: 20px;
   line-height: 1.6;
   color: #333;
+  text-indent: 2em;
+  text-align: left;
 }
 
 .article-body h2 {
