@@ -34,11 +34,12 @@
           <div class="article-card" v-for="article in filteredArticles" :key="article.id">
             <router-link :to="`/articles/${article.id}`" class="article-link">
               <div class="article-content">
-                <div v-if="article.cover" class="article-cover">
-                  <img :src="article.cover" :alt="article.title">
-                </div>
+
                 <div class="article-text">
                   <h3 class="article-title">{{ article.title }}</h3>
+                  <div v-if="article.cover" class="article-cover">
+                    <img :src="article.cover" :alt="article.title">
+                  </div>
                   <p class="content-text">{{ truncateContent(article.content) }}</p>
                   <div class="article-meta">
                     <span class="article-tags" v-for="tag in getArticleTags(article.tags)" :key="tag">#{{ tag }}</span>
@@ -172,7 +173,7 @@ onMounted(async () => {
   max-width: 1000px;
   margin: 20px auto;
   padding: 20px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -272,6 +273,7 @@ onMounted(async () => {
   height: 200px;
   overflow: hidden;
   margin-bottom: 15px;
+  border-radius: 10px;
 }
 
 .article-cover img {
@@ -299,6 +301,8 @@ onMounted(async () => {
 .content-text {
   font-size: 14px;
   line-height: 1.5;
+  text-align: left;
+  text-indent: 2em;
   color: #666;
   margin-bottom: 15px;
   overflow: hidden;

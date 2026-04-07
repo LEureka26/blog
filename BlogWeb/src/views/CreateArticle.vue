@@ -6,7 +6,7 @@
       </template>
       
       <el-form :model="articleForm" :rules="rules" ref="articleFormRef" label-width="100px">
-        <el-form-item label="标题" prop="title">
+        <el-form-item label="标题" prop="title" label-color="black">
           <el-input v-model="articleForm.title" placeholder="请输入文章标题" maxlength="255" show-word-limit />
         </el-form-item>
         
@@ -180,7 +180,22 @@ const handleSubmit = async () => {
   align-items: flex-start;
   min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+}
+
+.create-article::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: opacity(0.3);
+  z-index: -1;
 }
 
 /* 保持平板布局尺寸，不随窗口缩放改变 */
@@ -188,13 +203,24 @@ const handleSubmit = async () => {
 .create-article-card {
   width: 100%;
   max-width: 800px;
+  background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+.create-article-card :deep(.el-form-item__label) {
+  color: #000000 !important;
+}
 
+.create-article-card :deep(.el-input__inner) {
+  color: #000000 !important;
+}
+
+.create-article-card :deep(.el-textarea__inner) {
+  color: #000000 !important;
+}
 .create-article-card h2 {
   text-align: center;
   margin: 0;
-  color: #333;
+  color: #010101;
 }
 
 .tag-item {

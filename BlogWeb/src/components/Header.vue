@@ -109,6 +109,7 @@ onUnmounted(() => {
   top: 0;
   z-index: 100;
   width: 100%;
+  transition: transform 300ms ease-in-out, opacity 300ms ease-in-out;
 }
 
 .header-container {
@@ -151,22 +152,23 @@ onUnmounted(() => {
 
 .nav {
   display: flex;
-  gap: 15px;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
 }
 
 .nav-item {
   color: #333;
   text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
   padding: 8px 12px;
   border-radius: 4px;
-  flex-shrink: 0;
+  transition: background-color 0.3s;
   white-space: nowrap;
+  font-size: 14px;
 }
 
 .nav-item:hover {
+  background-color: #f5f7fa;
   color: #409eff;
 }
 
@@ -177,60 +179,44 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-.create-article-btn {
-  background: #409eff;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: background 0.3s;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.create-article-btn:hover {
-  background: #66b1ff;
-  color: #fff;
-}
-
 .user-menu {
   position: relative;
   cursor: pointer;
-  flex-shrink: 0;
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
-  z-index: 1;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .user-menu-dropdown {
   position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 45px;
+  right: 0;
   background: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  min-width: 160px;
-  padding: 8px 0;
-  z-index: 1000;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  padding: 10px 0;
+  z-index: 999;
 }
 
 .user-menu-header {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
   gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .menu-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -243,23 +229,32 @@ onUnmounted(() => {
 
 .menu-divider {
   height: 1px;
-  background: #e4e7ed;
-  margin: 4px 0;
+  background-color: #f0f0f0;
+  margin: 5px 0;
 }
 
 .menu-item {
   display: block;
-  padding: 8px 16px;
-  color: #333;
+  padding: 10px 16px;
+  color: #666;
   text-decoration: none;
   font-size: 14px;
-  transition: background 0.3s;
+  transition: all 0.3s;
 }
 
 .menu-item:hover {
-  background: #f5f7fa;
+  background-color: #f5f7fa;
+  color: #409eff;
 }
 
-/* 保持平板布局尺寸，不随窗口缩放改变 */
-/* 小屏幕下仍保持桌面端布局大小 */
+.create-article-btn {
+  background-color: #409eff;
+  color: #fff !important;
+  border-radius: 20px;
+  padding: 8px 20px;
+}
+
+.create-article-btn:hover {
+  background-color: #66b1ff !important;
+}
 </style>

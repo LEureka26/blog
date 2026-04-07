@@ -33,7 +33,7 @@
         <el-pagination
           v-model:current-page="pagination.current"
           v-model:page-size="pagination.size"
-          :page-sizes="[10, 20, 50]"
+          :page-sizes="[5, 10, 20]"
           layout="total, sizes, prev, pager ,next, jumper"
           :total="total"
           :prev-text="'上一页'"
@@ -57,7 +57,7 @@ const articles = ref([])
 const total = ref(0)
 const pagination = ref({
   current: 1,
-  size: 10
+  size: 5
 })
 
 // 截断内容
@@ -130,14 +130,14 @@ onMounted(() => {
   max-width: 950px;
   margin: 30px auto;
   padding: 20px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .container {
   max-width: 100%;
-  margin: 0 auto;
+  margin: 20px auto 0px;
   padding: 0 15px;
 }
 
@@ -150,7 +150,7 @@ onMounted(() => {
 
 .article-card {
   width: 90%;
-  max-width: 600px;
+  max-width: 650px;
   min-width: 280px;
   background: #fff;
   border-radius: 8px;
@@ -265,6 +265,51 @@ onMounted(() => {
   margin-top: 30px;
   display: flex;
   justify-content: center;
+}
+.pagination :deep(.el-pagination__total){
+font-size: 14px;
+}
+.pagination :deep(.el-select__placeholder span){
+color: #101010;
+}
+.pagination :deep(.el-pagination__goto){
+font-size: 14px;
+color: #131313;
+}
+.pagination :deep(.el-pagination) {
+  color: #000000;
+}
+
+.pagination :deep(.el-pagination__total) {
+  color: #000000;
+}
+
+.pagination :deep(.el-pagination .el-input__inner) {
+  background: rgba(255, 255, 255, 0.3);
+  color: #000000;
+}
+.pagination :deep(.el-select__wrapper){
+  background-color: rgba(255, 255, 255, 0.7);
+   color: #000000;
+}
+.pagination :deep( .el-input__wrapper){
+  background-color: rgba(255, 255, 255, 0.7);
+
+}
+.pagination :deep( .el-pagination .btn-prev){
+  background-color: rgba(255, 255, 255, 0.7);
+}
+.pagination :deep( .el-pager li.is-active){
+  background-color: rgba(255, 255, 255, 0.7);
+
+}
+.pagination :deep( .el-pager li){
+  background-color: rgba(255, 255, 255, 0.7);
+
+}
+.pagination :deep( .el-pagination .btn-next){
+  background-color: rgba(255, 255, 255, 0.7);
+
 }
 
 /* 保持平板布局尺寸，不随窗口缩放改变 */
