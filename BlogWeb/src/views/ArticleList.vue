@@ -34,7 +34,7 @@
           v-model:current-page="pagination.current"
           v-model:page-size="pagination.size"
           :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
+          layout="total, sizes, prev, pager ,next, jumper"
           :total="total"
           :prev-text="'上一页'"
           :next-text="'下一页'"
@@ -97,7 +97,7 @@ const loadArticles = async () => {
       total.value = 0
     }
   } catch (error) {
-    console.error('获取文章列表失败:', error)
+    // console.error('获取文章列表失败:', error)
   }
 }
 
@@ -126,9 +126,10 @@ onMounted(() => {
 
 <style scoped>
 .article-list {
-  width: 65vw;
-  margin: 50px auto;
-  padding: 30px;
+  width: 90vw;
+  max-width: 950px;
+  margin: 30px auto;
+  padding: 20px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -137,21 +138,20 @@ onMounted(() => {
 .container {
   max-width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 15px;
 }
-
-
 
 .article-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 50px;
+  gap: 30px;
   justify-items: center;
 }
 
 .article-card {
-  width: 80%;
-  min-width: 400px;
+  width: 90%;
+  max-width: 600px;
+  min-width: 280px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -266,4 +266,32 @@ onMounted(() => {
   display: flex;
   justify-content: center;
 }
+
+/* 保持平板布局尺寸，不随窗口缩放改变 */
+  
+  .tag {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+  
+  .empty-state {
+    padding: 60px 0;
+  }
+  
+  .pagination {
+    margin-top: 20px;
+  }
+  
+  .el-pagination {
+    font-size: 12px;
+  }
+  
+  .el-pagination__sizes {
+    display: none;
+  }
+  
+  .el-pagination__total {
+    font-size: 12px;
+  }
+
 </style>

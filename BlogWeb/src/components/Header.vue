@@ -23,15 +23,15 @@
       <div class="header-right">
         <router-link v-if="!isLoggedIn" to="/login" class="nav-item">登录</router-link>
         <div v-else class="user-menu">
-          <img :src="userAvatar" alt="用户头像" class="user-avatar" @click="toggleUserMenu">
+          <img :src="userAvatar" alt="用户头像" class="user-avatar" @click="toggleUserMenu($event)">
           <div v-if="showUserMenu" class="user-menu-dropdown">
             <div class="user-menu-header">
               <img :src="userAvatar" alt="用户头像" class="menu-avatar">
               <span class="menu-username">{{ user?.username }}</span>
             </div>
             <div class="menu-divider"></div>
-            <router-link to="/user" class="menu-item">个人中心</router-link>
-            <a href="#" class="menu-item" @click.prevent="logout">退出登录</a>
+            <router-link to="/user" class="menu-item" @click="handleMenuItemClick">个人中心</router-link>
+            <a href="#" class="menu-item" @click.prevent="handleLogout">退出登录</a>
           </div>
         </div>
         <router-link to="/articles/create" class="nav-item create-article-btn">写文章</router-link>
@@ -49,7 +49,7 @@ import { Search } from '@element-plus/icons-vue'
 import defaultAvatar from '../assets/1.jpeg'
 
 const router = useRouter()
-const { isLoggedIn, logout: authLogout, user } = useAuth()
+const { isLoggedIn, logout, user } = useAuth()
 const showUserMenu = ref(false)
 const searchQuery = ref('')
 
@@ -59,14 +59,20 @@ const userAvatar = computed(() => {
 })
 
 // 切换用户菜单
-const toggleUserMenu = () => {
+const toggleUserMenu = (event) => {
+  event.stopPropagation()
   showUserMenu.value = !showUserMenu.value
 }
 
-// 退出登录
-const logout = async () => {
-  await authLogout()
+// 点击菜单项后关闭菜单并跳转
+const handleMenuItemClick = () => {
   showUserMenu.value = false
+}
+
+// 退出登录
+const handleLogout = async () => {
+  showUserMenu.value = false
+  await logout()
   router.push('/login')
 }
 
@@ -119,13 +125,15 @@ onUnmounted(() => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 20px;
-  flex-shrink: 0;
+  gap: 15px;
+  flex: 1;
+  min-width: 0;
 }
 
 .search-container {
-  width: 300px;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 150px;
+  max-width: 300px;
 }
 
 .search-input {
@@ -138,11 +146,12 @@ onUnmounted(() => {
   color: #409eff;
   text-decoration: none;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nav {
   display: flex;
-  gap: 20px;
+  gap: 15px;
   flex-shrink: 0;
 }
 
@@ -154,6 +163,7 @@ onUnmounted(() => {
   padding: 8px 12px;
   border-radius: 4px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nav-item:hover {
@@ -163,7 +173,7 @@ onUnmounted(() => {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
   flex-shrink: 0;
 }
 
@@ -175,6 +185,7 @@ onUnmounted(() => {
   font-size: 14px;
   transition: background 0.3s;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .create-article-btn:hover {
@@ -193,6 +204,8 @@ onUnmounted(() => {
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
+  cursor: pointer;
+  z-index: 1;
 }
 
 .user-menu-dropdown {
@@ -246,4 +259,7 @@ onUnmounted(() => {
 .menu-item:hover {
   background: #f5f7fa;
 }
+
+/* 保持平板布局尺寸，不随窗口缩放改变 */
+/* 小屏幕下仍保持桌面端布局大小 */
 </style>

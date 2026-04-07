@@ -80,13 +80,13 @@ const getArticleDetail = async () => {
       try {
         response.data.tags = JSON.parse(response.data.tags)
       } catch (e) {
-        console.error('解析 tags 失败:', e)
+        // console.error('解析 tags 失败:', e)
         response.data.tags = []
       }
     }
     article.value = response.data
   } catch (err) {
-    console.error('获取文章详情失败:', err)
+    // console.error('获取文章详情失败:', err)
     error.value = '获取文章详情失败，请稍后重试'
   } finally {
     loading.value = false
@@ -112,7 +112,7 @@ const confirmDelete = () => {
       ElMessage.success('文章删除成功')
       router.push('/articles')
     } catch (err) {
-      console.error('删除文章失败:', err)
+      // console.error('删除文章失败:', err)
       ElMessage.error('删除文章失败，请稍后重试')
     }
   }).catch(() => {
@@ -129,6 +129,7 @@ onMounted(() => {
 <style scoped>
 .article-detail {
   width: 70%;
+  max-width: 800px;
   margin: 20px auto 0;
   padding: 30px;
   background: #fff;
@@ -188,13 +189,16 @@ onMounted(() => {
 
 .article-cover {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .article-cover img {
   width: 90%;
+  max-width: 600px;
   height: 300px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 }
 
 .article-body {
@@ -215,8 +219,19 @@ onMounted(() => {
   margin-bottom: 10px;
 }
 
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
 .article-tags {
   margin-bottom: 20px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .tag {
@@ -226,8 +241,7 @@ onMounted(() => {
   border-radius: 12px;
   font-size: 12px;
   color: #409eff;
-  margin-right: 8px;
-  margin-bottom: 8px;
+  margin-right: 20px;
 }
 
 .article-actions {
@@ -235,4 +249,29 @@ onMounted(() => {
   display: flex;
   gap: 10px;
 }
+
+/* 保持平板布局尺寸，不随窗口缩放改变 */
+  .tag {
+    padding: 3px 10px;
+    font-size: 10px;
+  }
+  
+  .article-actions {
+    margin-top: 20px;
+  }
+  
+  .article-actions button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+  
+  .loading {
+    height: 150px;
+    font-size: 16px;
+  }
+  
+  .loading .el-icon {
+    font-size: 20px;
+  }
+
 </style>

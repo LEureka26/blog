@@ -97,7 +97,7 @@ const handleLogin = async () => {
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-width: 1200px;
+  min-width: 800px;
 }
 
 .login-card {

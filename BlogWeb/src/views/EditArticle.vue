@@ -71,7 +71,7 @@
             v-model="articleForm.content"
             type="textarea"
             :rows="10"
-            placeholder="请输入文章内容（Markdown 格式）"
+            placeholder="请输入文章内容"
           />
         </el-form-item>
         
@@ -271,8 +271,9 @@ onMounted(() => {
   min-height: 100vh;
   padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-width: 1200px;
 }
+
+/* 保持平板布局尺寸，不随窗口缩放改变 */
 
 .edit-article-card {
   width: 100%;

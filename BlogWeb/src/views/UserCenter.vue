@@ -252,7 +252,6 @@ onMounted(async () => {
 <style scoped>
 .user-center {
   padding: 20px;
-  min-width: 1200px;
 }
 
 .container {
@@ -434,4 +433,24 @@ onMounted(async () => {
   color: #666;
   margin: 0;
 }
+
+/* 保持平板布局尺寸，不随窗口缩放改变 */
+  
+  .avatar-preview {
+    padding: 15px;
+  }
+  
+  .preview-avatar {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .avatar-upload {
+    padding: 15px;
+  }
+  
+  .el-dialog {
+    width: 95% !important;
+  }
+
 </style>

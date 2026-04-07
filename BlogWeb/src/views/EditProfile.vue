@@ -110,7 +110,6 @@ onMounted(async () => {
 <style scoped>
 .edit-profile {
   padding: 20px;
-  min-width: 1200px;
 }
 
 .container {
@@ -129,4 +128,6 @@ h1 {
   margin-bottom: 30px;
   text-align: center;
 }
+
+/* 保持平板布局尺寸，不随窗口缩放改变 */
 </style>

@@ -126,10 +126,10 @@ const getCategories = async () => {
 // 获取文章列表
 const getArticles = async () => {
   try {
-    console.log('开始获取文章列表...')
+    // console.log('开始获取文章列表...')
     const response = await articleAPI.getArticles()
-    console.log('获取文章列表响应:', response)
-    console.log('响应数据:', response.data)
+    // console.log('获取文章列表响应:', response)
+    // console.log('响应数据:', response.data)
     // 处理后端返回的数据格式
     if (response.data && Array.isArray(response.data)) {
       // 如果 response.data 是一个数组，直接使用它
@@ -141,7 +141,7 @@ const getArticles = async () => {
       // 否则，使用一个空数组
       articles.value = []
     }
-    console.log('处理后的文章列表:', articles.value)
+    // console.log('处理后的文章列表:', articles.value)
     // 处理文章标签
     if (Array.isArray(articles.value)) {
       articles.value.forEach(article => {
@@ -150,27 +150,28 @@ const getArticles = async () => {
         }
       })
     }
-    console.log('处理标签后的文章列表:', articles.value)
+    // console.log('处理标签后的文章列表:', articles.value)
   } catch (error) {
-    console.error('获取文章列表失败:', error)
+    // console.error('获取文章列表失败:', error)
   }
 }
 
 // 初始化
 onMounted(async () => {
-  console.log('开始初始化...')
+  // console.log('开始初始化...')
   await getCategories()
-  console.log('获取分类列表完成')
+  // console.log('获取分类列表完成')
   await getArticles()
-  console.log('获取文章列表完成')
+  // console.log('获取文章列表完成')
 })
 </script>
 
 <style scoped>
 .category-list {
-  width: 80vw;
+  width: 90vw;
+  max-width: 1000px;
   margin: 20px auto;
-  padding: 30px;
+  padding: 20px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -319,6 +320,7 @@ onMounted(async () => {
 .article-tags {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .article-tags span {
@@ -334,4 +336,26 @@ onMounted(async () => {
   color: #999;
   grid-column: 1 / -1;
 }
+
+/* 保持平板布局尺寸，不随窗口缩放改变 */
+  .article-meta {
+    font-size: 10px;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .article-tags {
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+  
+  .article-tags span {
+    padding: 1px 6px;
+    font-size: 10px;
+  }
+  
+  .empty-state {
+    padding: 60px 0;
+  }
+
 </style>

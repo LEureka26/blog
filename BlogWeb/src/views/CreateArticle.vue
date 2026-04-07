@@ -113,7 +113,7 @@ onMounted(async () => {
     const response = await categoryAPI.getCategories()
     categories.value = response.data
   } catch (error) {
-    console.error('获取分类列表失败:', error)
+    // console.error('获取分类列表失败:', error)
     ElMessage.error('获取分类列表失败，使用默认分类')
     // 设置默认分类选项
     categories.value = [
@@ -152,8 +152,8 @@ const handleSubmit = async () => {
       author_id: user.value?.id || 1 // 默认使用 ID 为 1 的用户
     }
     
-    console.log('提交的文章数据:', formData)
-    console.log('标签数据:', formData.tags)
+    // console.log('提交的文章数据:', formData)
+    // console.log('标签数据:', formData.tags)
     
     const response = await articleAPI.createArticle(formData)
     
@@ -181,8 +181,9 @@ const handleSubmit = async () => {
   min-height: 100vh;
   padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-width: 1200px;
 }
+
+/* 保持平板布局尺寸，不随窗口缩放改变 */
 
 .create-article-card {
   width: 100%;
