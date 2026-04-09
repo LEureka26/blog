@@ -199,11 +199,11 @@ async function updateArticle(req, res) {
     const { id } = req.params;
     const { title, content, category, tags, cover, author_id } = req.body;
 
-    console.log('=== 编辑文章请求 ===');
-    console.log('文章 ID:', id);
-    console.log('接收到的完整数据:', JSON.stringify(req.body));
-    console.log('标签原始值:', tags);
-    console.log('标签类型:', typeof tags);
+    // console.log('=== 编辑文章请求 ===');
+    // console.log('文章 ID:', id);
+    // console.log('接收到的完整数据:', JSON.stringify(req.body));
+    // console.log('标签原始值:', tags);
+    // console.log('标签类型:', typeof tags);
 
     // 验证参数
     if (!title || !content || !category || !author_id) {
