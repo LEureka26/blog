@@ -120,7 +120,7 @@
 - 浏览次数 +1
 - 实现文章详情页面（需要登录），可以编辑删除文章
 
-编辑文章：PUT /articles/:id
+编辑文章：POST /articles/:id
 - 接收文章 ID，获取文章详情
 - 接收 title、content、category、tags、cover
 - 验证参数（标题、内容、分类、标签、封面）
