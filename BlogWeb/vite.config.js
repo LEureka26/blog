@@ -11,6 +11,7 @@ export default defineConfig({
     }
   },
   server: {
-    host: true
+    // host: true,就会显示本地ip
+    host: 'localhost'
   }
 })
