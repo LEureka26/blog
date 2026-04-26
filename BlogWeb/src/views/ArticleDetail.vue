@@ -2,7 +2,7 @@
   <div class="article-detail">
     <div v-if="loading" class="loading">
       <el-icon class="is-loading"><Loading /></el-icon>
-      <span>加载中...</span>
+      <span>加载中...请稍等</span>
     </div>
     <div v-else-if="error" class="error">
       <el-alert
